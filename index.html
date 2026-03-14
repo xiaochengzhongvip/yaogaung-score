@@ -376,50 +376,64 @@ const activitiesData = [
       { teamId: 7, score: 109, rank: 5,  members: ['醉一枕星河(48)', '山河皆入梦(48)', '爱在凛冬凋零(13)'] },
       { teamId: 8, score: 113, rank: 4,  members: ['宇宙浪子(25)', '怒琅(13)', '冒牌天神(61)', '别让我卡主线(14)'] },
     ]
+  },
+  {
+    id: 5, name: '3月14日团战', date: '2026-03-14', type: '正式赛', status: '已结束',
+    desc: '第五场团战，第七队强势爆发，第四队全员参赛',
+    teamScores: [
+      { teamId: 1, score: 224, rank: 3,  members: ['喵菲(56)', '大猛一(56)', '祈屿(56)', '芸汐(56)'] },
+      { teamId: 2, score: 236, rank: 2,  members: ['改名必出绝世金(67)', '热心网友小陈(67)', '菜饼(35)', '枭魂儿(67)'] },
+      { teamId: 3, score: 228, rank: 4,  members: ['SKMO(57)', '荒原小风(57)', '啷个哩个啷(57)', '先吃饭叭(57)'] },
+      { teamId: 4, score: 216, rank: 5,  members: ['薛蜀黍(54)', '郁枫(54)', '真没招了(54)', '李灵儿(54)'] },
+      { teamId: 5, score: 225, rank: 6,  members: ['一方通行(75)', '蟑螂恶霸(75)', '蝎子莱莱(75)', 'KK丶丶(0)'] },
+      { teamId: 6, score: 148, rank: 7,  members: ['青影(37)', '青歌(37)', '何以解千愁(37)', '何以消暑夏(37)'] },
+      { teamId: 7, score: 272, rank: 1,  members: ['眠十里星光(68)', '醉一枕星河(68)', '爱在凛冬凋零(68)', '山河皆入梦(68)'] },
+      { teamId: 8, score: 88,  rank: 8,  members: ['宇宙浪子(22)', '怒琅(22)', '冒牌天神(22)', '别让我卡主线(22)'] },
+    ]
   }
 ];
 
 const memberScores = [
   // 第五队
-  { name: '一方通行',     team: '第五队', scores: [126, 52,  88, 106], total: 372, weapon: '棘梦' },
-  { name: '蟑螂恶霸',     team: '第五队', scores: [126, 83,  88, 106], total: 403, weapon: '双刀' },
-  { name: 'KK丶丶',       team: '第五队', scores: [ 36, 73,  88, 106], total: 303, weapon: '棘梦' },
-  { name: '蝎子莱莱',     team: '第五队', scores: [  0, 83,  88, 106], total: 277, weapon: '电弓' },
+  { name: '一方通行',     team: '第五队', scores: [126, 52,  88, 106,  75], total: 447, weapon: '棘梦' },
+  { name: '蟑螂恶霸',     team: '第五队', scores: [126, 83,  88, 106,  75], total: 478, weapon: '双刀' },
+  { name: 'KK丶丶',       team: '第五队', scores: [ 36, 73,  88, 106,   0], total: 303, weapon: '棘梦' },
+  { name: '蝎子莱莱',     team: '第五队', scores: [  0, 83,  88, 106,  75], total: 352, weapon: '电弓' },
   // 第一队
-  { name: '喵菲',         team: '第一队', scores: [ 72, 72,  73,  71], total: 288, weapon: '双刀' },
-  { name: '大猛一',       team: '第一队', scores: [ 72, 72,  73,  71], total: 288, weapon: '棘梦' },
-  { name: '祈屿',         team: '第一队', scores: [ 72, 72,  73,  71], total: 288, weapon: '棘梦' },
-  { name: '芸汐',         team: '第一队', scores: [  0, 72,  71,  61], total: 204, weapon: '棘梦' },
+  { name: '喵菲',         team: '第一队', scores: [ 72, 72,  73,  71,  56], total: 344, weapon: '双刀' },
+  { name: '大猛一',       team: '第一队', scores: [ 72, 72,  73,  71,  56], total: 344, weapon: '棘梦' },
+  { name: '祈屿',         team: '第一队', scores: [ 72, 72,  73,  71,  56], total: 344, weapon: '棘梦' },
+  { name: '芸汐',         team: '第一队', scores: [  0, 72,  71,  61,  56], total: 260, weapon: '棘梦' },
   // 第二队
-  { name: '改名必出绝世金',team: '第二队', scores: [ 62, 58,  67,  67], total: 254, weapon: '棘梦' },
-  { name: '热心网友小陈', team: '第二队', scores: [ 62, 58,  67,  67], total: 254, weapon: '电弓' },
-  { name: '菜饼',         team: '第二队', scores: [ 62, 58,  67,  67], total: 254, weapon: '棘梦' },
-  { name: '枭魂儿',       team: '第二队', scores: [ 62, 58,  67,  67], total: 254, weapon: '棘梦' },
+  { name: '改名必出绝世金',team: '第二队', scores: [ 62, 58,  67,  67,  67], total: 321, weapon: '棘梦' },
+  { name: '热心网友小陈', team: '第二队', scores: [ 62, 58,  67,  67,  67], total: 321, weapon: '电弓' },
+  { name: '菜饼',         team: '第二队', scores: [ 62, 58,  67,  67,  35], total: 289, weapon: '棘梦' },
+  { name: '枭魂儿',       team: '第二队', scores: [ 62, 58,  67,  67,  67], total: 321, weapon: '棘梦' },
   // 第三队
-  { name: 'SKMO',         team: '第三队', scores: [  0, 45,  46,  40], total: 131, weapon: '棘梦' },
-  { name: '荒原小风',     team: '第三队', scores: [ 43, 41,  46,  40], total: 170, weapon: '电弓' },
-  { name: '啷个哩个啷',   team: '第三队', scores: [  0, 37,  46,  34], total: 117, weapon: '冰锤' },
-  { name: '先吃饭叭',     team: '第三队', scores: [  0, 34,  46,  40], total: 120, weapon: '棘梦' },
+  { name: 'SKMO',         team: '第三队', scores: [  0, 45,  46,  40,  57], total: 188, weapon: '棘梦' },
+  { name: '荒原小风',     team: '第三队', scores: [ 43, 41,  46,  40,  57], total: 227, weapon: '电弓' },
+  { name: '啷个哩个啷',   team: '第三队', scores: [  0, 37,  46,  34,  57], total: 174, weapon: '冰锤' },
+  { name: '先吃饭叭',     team: '第三队', scores: [  0, 34,  46,  40,  57], total: 177, weapon: '棘梦' },
   // 第四队
-  { name: '薛蜀黍',       team: '第四队', scores: [ 43,  0,  48,   0], total:  91, weapon: '棘梦' },
-  { name: '真没招了',     team: '第四队', scores: [ 43,  0,  48,  48], total: 139, weapon: '棘梦' },
-  { name: '郁枫',         team: '第四队', scores: [  0,  0,   0,   0], total:   0, weapon: '棘梦' },
-  { name: '李灵儿',       team: '第四队', scores: [  0,  0,   0,   0], total:   0, weapon: '棘梦' },
+  { name: '薛蜀黍',       team: '第四队', scores: [ 43,  0,  48,   0,  54], total: 145, weapon: '棘梦' },
+  { name: '真没招了',     team: '第四队', scores: [ 43,  0,  48,  48,  54], total: 193, weapon: '棘梦' },
+  { name: '郁枫',         team: '第四队', scores: [  0,  0,   0,   0,  54], total:  54, weapon: '棘梦' },
+  { name: '李灵儿',       team: '第四队', scores: [  0,  0,   0,   0,  54], total:  54, weapon: '棘梦' },
   // 第六队
-  { name: '青影',         team: '第六队', scores: [ 26, 36,  24,  24], total: 110, weapon: '棘梦' },
-  { name: '青歌',         team: '第六队', scores: [ 26, 36,  24,  24], total: 110, weapon: '冬至' },
-  { name: '何以解千愁',   team: '第六队', scores: [ 26, 36,  24,   8], total:  94, weapon: '棘梦' },
-  { name: '何以消暑夏',   team: '第六队', scores: [  0, 36,  24,   8], total:  68, weapon: '电弓' },
+  { name: '青影',         team: '第六队', scores: [ 26, 36,  24,  24,  37], total: 147, weapon: '棘梦' },
+  { name: '青歌',         team: '第六队', scores: [ 26, 36,  24,  24,  37], total: 147, weapon: '冬至' },
+  { name: '何以解千愁',   team: '第六队', scores: [ 26, 36,  24,   8,  37], total: 131, weapon: '棘梦' },
+  { name: '何以消暑夏',   team: '第六队', scores: [  0, 36,  24,   8,  37], total: 105, weapon: '电弓' },
   // 第七队
-  { name: '眠十里星光',   team: '第七队', scores: [ 39, 33,  48,   0], total: 120, weapon: '电弓' },
-  { name: '醉一枕星河',   team: '第七队', scores: [ 39, 33,  48,  48], total: 168, weapon: '棘梦' },
-  { name: '爱在凛冬凋零', team: '第七队', scores: [ 40, 33,  48,  13], total: 134, weapon: '双刀' },
-  { name: '山河皆入梦',   team: '第七队', scores: [ 39, 33,  48,  48], total: 168, weapon: '棘梦' },
+  { name: '眠十里星光',   team: '第七队', scores: [ 39, 33,  48,   0,  68], total: 188, weapon: '电弓' },
+  { name: '醉一枕星河',   team: '第七队', scores: [ 39, 33,  48,  48,  68], total: 236, weapon: '棘梦' },
+  { name: '爱在凛冬凋零', team: '第七队', scores: [ 40, 33,  48,  13,  68], total: 202, weapon: '双刀' },
+  { name: '山河皆入梦',   team: '第七队', scores: [ 39, 33,  48,  48,  68], total: 236, weapon: '棘梦' },
   // 第八队
-  { name: '别让我卡主线', team: '第八队', scores: [  0,  0,  14,  14], total:  28, weapon: '电弓' },
-  { name: '冒牌天神',     team: '第八队', scores: [  0,  0,  61,  61], total: 122, weapon: '火/暗/物理弓' },
-  { name: '怒琅',         team: '第八队', scores: [  0,  0,  13,  13], total:  26, weapon: '其他' },
-  { name: '宇宙浪子',     team: '第八队', scores: [  0, 25,  25,  25], total:  75, weapon: '冰弓' },
+  { name: '别让我卡主线', team: '第八队', scores: [  0,  0,  14,  14,  22], total:  50, weapon: '电弓' },
+  { name: '冒牌天神',     team: '第八队', scores: [  0,  0,  61,  61,  22], total: 144, weapon: '火/暗/物理弓' },
+  { name: '怒琅',         team: '第八队', scores: [  0,  0,  13,  13,  22], total:  48, weapon: '其他' },
+  { name: '宇宙浪子',     team: '第八队', scores: [  0, 25,  25,  25,  22], total:  97, weapon: '冰弓' },
 ];
 
 /* ==================== 计算数据 ==================== */

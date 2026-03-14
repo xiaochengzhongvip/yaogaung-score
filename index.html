@@ -492,6 +492,44 @@ function renderHome() {
   );
   frag.appendChild(hero);
 
+  // 核心成员
+  const coreSection = h('div', { class: 'section' },
+    h('div', { class: 'section-header' },
+      h('span', { class: 'section-title' }, '👑 核心成员')
+    ),
+    h('div', { style: 'display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 14px 10px;' },
+      h('div', { style: 'background:var(--card);border-radius:12px;padding:12px;border:1px solid var(--border);display:flex;align-items:center;gap:10px;' },
+        h('span', { style: 'font-size:22px;' }, '⚔️'),
+        h('div', {},
+          h('div', { style: 'font-size:11px;color:var(--text2);' }, '团长'),
+          h('div', { style: 'font-size:14px;font-weight:700;color:var(--gold);' }, '一方通行')
+        )
+      ),
+      h('div', { style: 'background:var(--card);border-radius:12px;padding:12px;border:1px solid var(--border);display:flex;align-items:center;gap:10px;' },
+        h('span', { style: 'font-size:22px;' }, '🛡️'),
+        h('div', {},
+          h('div', { style: 'font-size:11px;color:var(--text2);' }, '副团长'),
+          h('div', { style: 'font-size:14px;font-weight:700;color:var(--gold);' }, '蝎子莱莱')
+        )
+      ),
+      h('div', { style: 'background:var(--card);border-radius:12px;padding:12px;border:1px solid var(--border);display:flex;align-items:center;gap:10px;' },
+        h('span', { style: 'font-size:22px;' }, '💰'),
+        h('div', {},
+          h('div', { style: 'font-size:11px;color:var(--text2);' }, '金主'),
+          h('div', { style: 'font-size:14px;font-weight:700;color:var(--gold);' }, '蟑螂恶霸')
+        )
+      ),
+      h('div', { style: 'background:var(--card);border-radius:12px;padding:12px;border:1px solid var(--border);display:flex;align-items:center;gap:10px;' },
+        h('span', { style: 'font-size:22px;' }, '🤝'),
+        h('div', {},
+          h('div', { style: 'font-size:11px;color:var(--text2);' }, '外交'),
+          h('div', { style: 'font-size:14px;font-weight:700;color:var(--gold);' }, 'KK丶丶')
+        )
+      )
+    )
+  );
+  frag.appendChild(coreSection);
+
   // TOP3
   const top3Section = h('div', { class: 'section' },
     h('div', { class: 'section-header' },

@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>瑶光团战积分系统</title>
+<style>
+  /* ===== 全局重置 ===== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0d0d1f;
+    --bg2: #13132b;
+    --card: #1a1a35;
+    --card2: #22224a;
+    --nav: #111128;
+    --gold: #C8A84B;
+    --gold2: #e8c867;
+    --text: #e8e8f0;
+    --text2: #9999bb;
+    --border: rgba(200,168,75,0.18);
+    --radius: 14px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  }
+  html, body { height: 100%; background: var(--bg); color: var(--text); font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif; font-size: 14px; overflow: hidden; }
+  
+  /* ===== 布局容器 ===== */
+  #app { display: flex; flex-direction: column; height: 100vh; max-width: 480px; margin: 0 auto; position: relative; background: var(--bg); box-shadow: 0 0 40px rgba(0,0,0,0.6); }
+  
+  /* ===== 内容区域 ===== */
+  .page-content { flex: 1; overflow-y: auto; padding-bottom: 70px; }
+  .page-content::-webkit-scrollbar { display: none; }
+  
+  /* ===== 顶部导航栏 ===== */
+  .topbar { background: #111128; padding: 14px 16px 10px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+  .topbar-back { width: 32px; height: 32px; border-radius: 50%; background: rgba(200,168,75,0.15); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--gold); font-size: 16px; }
+  .topbar-title { font-size: 16px; font-weight: 700; color: var(--text); }
+  
+  /* ===== 底部TabBar ===== */
+  #tabbar { background: var(--nav); border-top: 1px solid var(--border); display: flex; position: sticky; bottom: 0; z-index: 200; flex-shrink: 0; }
+  .tab-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 0 8px; cursor: pointer; transition: color 0.2s; color: #666688; gap: 3px; }
+  .tab-item.active { color: var(--gold); }
+  .tab-item .tab-icon { font-size: 20px; }
+  .tab-item .tab-label { font-size: 11px; font-weight: 500; }
+  
+  /* ===== 通用卡片 ===== */
+  .card { background: var(--card); border-radius: var(--radius); padding: 16px; margin: 10px 14px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+  .section { margin: 0 0 4px; }
+  .section-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 14px 6px; }
+  .section-title { font-size: 15px; font-weight: 700; color: var(--text); }
+  .section-more { font-size: 13px; color: var(--gold); cursor: pointer; }
+  .empty-tip { text-align: center; padding: 40px; color: var(--text2); }
+
+  /* ===== 搜索框 ===== */
+  .search-wrap { padding: 10px 14px 4px; }
+  .search-input { width: 100%; background: var(--card2); border: 1px solid var(--border); border-radius: 24px; padding: 9px 16px; color: var(--text); font-size: 14px; outline: none; }
+  .search-input::placeholder { color: var(--text2); }
+  .search-input:focus { border-color: var(--gold); }
+
+  /* ==================== 首页 ==================== */
+  .hero { background: linear-gradient(160deg, #1c1c4a 0%, #0d0d1f 100%); padding: 28px 16px 22px; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; top: -30px; right: -20px; width: 160px; height: 160px; background: radial-gradient(circle, rgba(200,168,75,0.12) 0%, transparent 70%); pointer-events: none; }
+  .hero-badge { display: inline-block; background: rgba(200,168,75,0.15); border: 1px solid rgba(200,168,75,0.4); color: var(--gold); font-size: 11px; padding: 3px 10px; border-radius: 20px; margin-bottom: 8px; }
+  .hero-title { font-size: 26px; font-weight: 900; color: #fff; letter-spacing: 2px; }
+  .hero-subtitle { font-size: 14px; color: var(--text2); margin-top: 4px; }
+  .overview-row { display: flex; margin-top: 20px; background: rgba(255,255,255,0.04); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
+  .ov-item { flex: 1; padding: 14px 0; text-align: center; }
+  .ov-item:not(:last-child) { border-right: 1px solid var(--border); }
+  .ov-num { display: block; font-size: 24px; font-weight: 800; color: var(--gold); }
+  .ov-lbl { display: block; font-size: 11px; color: var(--text2); margin-top: 2px; }
+
+  /* 首页TOP3 */
+  .top3-list { padding: 0 14px; display: flex; flex-direction: column; gap: 10px; }
+  .top3-item { background: var(--card); border-radius: 12px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; border: 1px solid var(--border); cursor: pointer; transition: border-color 0.2s; }
+  .top3-item:hover { border-color: var(--gold); }
+  .top3-rank { font-size: 22px; width: 28px; text-align: center; }
+  .top3-avatar { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+  .top3-info { flex: 1; }
+  .top3-name { display: block; font-size: 15px; font-weight: 700; }
+  .top3-captain { display: block; font-size: 12px; color: var(--text2); margin-top: 2px; }
+  .top3-score { font-size: 20px; font-weight: 800; color: var(--gold); }
+
+  /* 最近赛事 */
+  .latest-card { margin: 0 14px; background: var(--card); border-radius: 12px; padding: 14px 16px; border: 1px solid var(--border); }
+  .latest-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .latest-name { font-size: 15px; font-weight: 700; }
+  .latest-badge { background: rgba(200,168,75,0.15); border: 1px solid rgba(200,168,75,0.4); color: var(--gold); font-size: 11px; padding: 2px 8px; border-radius: 10px; }
+  .latest-date { font-size: 12px; color: var(--text2); }
+  .latest-desc { font-size: 13px; color: var(--text2); margin-top: 6px; }
+
+  /* 个人TOP5 */
+  .mr-list { padding: 0 14px; display: flex; flex-direction: column; gap: 8px; }
+  .mr-item { background: var(--card); border-radius: 10px; padding: 10px 14px; display: flex; align-items: center; gap: 10px; border: 1px solid var(--border); }
+  .mr-rank { width: 24px; font-size: 14px; font-weight: 800; color: var(--text2); text-align: center; }
+  .mr-rank.top1 { color: #FFD700; }
+  .mr-rank.top2 { color: #C0C0C0; }
+  .mr-rank.top3 { color: #CD7F32; }
+  .mr-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--card2); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: var(--gold); border: 1px solid var(--border); }
+  .mr-info { flex: 1; }
+  .mr-name { display: block; font-size: 14px; font-weight: 600; }
+  .mr-team { display: block; font-size: 12px; color: var(--text2); margin-top: 1px; }
+  .mr-score { font-size: 18px; font-weight: 800; color: var(--gold); }
+
+  /* 快捷按钮 */
+  .entry-btn { margin: 8px 14px 0; background: linear-gradient(135deg, rgba(200,168,75,0.2), rgba(200,168,75,0.08)); border: 1px solid rgba(200,168,75,0.4); border-radius: 12px; padding: 14px; text-align: center; font-size: 15px; font-weight: 700; color: var(--gold); cursor: pointer; transition: background 0.2s; }
+  .entry-btn:hover { background: rgba(200,168,75,0.25); }
+
+  /* ==================== 战队列表 ==================== */
+  .team-list { padding: 0 14px; display: flex; flex-direction: column; gap: 10px; }
+  .team-card { background: var(--card); border-radius: 14px; padding: 14px; display: flex; gap: 12px; border: 1px solid var(--border); cursor: pointer; transition: border-color 0.2s, transform 0.15s; }
+  .team-card:hover { border-color: var(--gold); transform: translateY(-1px); }
+  .card-left { flex-shrink: 0; }
+  .team-avatar { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; }
+  .card-right { flex: 1; min-width: 0; }
+  .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
+  .team-name { font-size: 16px; font-weight: 800; }
+  .team-score { font-size: 18px; font-weight: 800; color: var(--gold); }
+  .team-captain { font-size: 12px; color: var(--text2); margin-bottom: 4px; }
+  .team-desc { font-size: 13px; color: var(--text2); margin-bottom: 8px; line-height: 1.4; }
+  .member-preview { display: flex; flex-wrap: wrap; gap: 4px; }
+  .mp-tag { background: var(--card2); border-radius: 6px; padding: 2px 8px; font-size: 11px; color: var(--text2); }
+
+  /* ==================== 战队详情 ==================== */
+  .team-hero-detail { padding: 22px 16px 18px; position: relative; overflow: hidden; }
+  .hero-top { display: flex; align-items: center; gap: 14px; }
+  .hero-avatar-lg { width: 68px; height: 68px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 34px; flex-shrink: 0; }
+  .hero-info-text { flex: 1; }
+  .hero-name-lg { font-size: 20px; font-weight: 900; color: #fff; }
+  .hero-captain-lg { font-size: 13px; color: var(--gold); margin-top: 3px; }
+  .hero-desc-lg { font-size: 13px; color: var(--text2); margin-top: 5px; line-height: 1.4; }
+  
+  .stats-bar { display: flex; background: var(--card2); margin: 0 14px; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
+  .stat-box { flex: 1; padding: 12px 0; text-align: center; }
+  .stat-box:not(:last-child) { border-right: 1px solid var(--border); }
+  .stat-val { display: block; font-size: 22px; font-weight: 800; }
+  .stat-lbl { display: block; font-size: 11px; color: var(--text2); margin-top: 2px; }
+
+  .member-list { padding: 0 14px; display: flex; flex-direction: column; gap: 8px; }
+  .member-card { background: var(--card); border-radius: 10px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; border: 1px solid var(--border); }
+  .member-rank { width: 28px; text-align: center; }
+  .captain-badge { background: rgba(200,168,75,0.2); border: 1px solid rgba(200,168,75,0.5); color: var(--gold); font-size: 10px; padding: 2px 5px; border-radius: 6px; }
+  .member-idx { font-size: 13px; color: var(--text2); font-weight: 700; }
+  .member-avatar-box { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; color: #fff; }
+  .member-info { flex: 1; }
+  .member-name { font-size: 14px; font-weight: 700; }
+  .member-sub { display: block; font-size: 12px; color: var(--text2); margin-top: 2px; }
+  .member-score-box { text-align: right; }
+  .member-total-score { display: block; font-size: 18px; font-weight: 800; color: var(--gold); }
+  .member-score-label { display: block; font-size: 11px; color: var(--text2); }
+
+  .history-list { padding: 0 14px; display: flex; flex-direction: column; gap: 8px; }
+  .history-item { background: var(--card); border-radius: 10px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; border: 1px solid var(--border); }
+  .history-rank { font-size: 20px; width: 36px; text-align: center; }
+  .history-rank-text { font-size: 13px; color: var(--text2); font-weight: 600; }
+  .history-info { flex: 1; }
+  .history-name { display: block; font-size: 14px; font-weight: 700; }
+  .history-date { display: block; font-size: 12px; color: var(--text2); margin-top: 2px; }
+  .history-score { font-size: 18px; font-weight: 800; color: #4ecdc4; }
+  .history-members { font-size: 11px; color: var(--text2); margin-top: 4px; line-height: 1.5; }
+
+  /* ==================== 排行榜 ==================== */
+  .rank-tabs { display: flex; background: var(--card2); margin: 10px 14px 0; border-radius: 10px; padding: 3px; border: 1px solid var(--border); }
+  .rank-tab { flex: 1; padding: 8px 0; text-align: center; font-size: 13px; font-weight: 600; color: var(--text2); border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+  .rank-tab.active { background: var(--gold); color: #111; }
+
+  /* 颁奖台 */
+  .podium { display: flex; align-items: flex-end; justify-content: center; gap: 8px; padding: 20px 14px 14px; }
+  .podium-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; }
+  .podium-avatar { border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+  .podium-avatar.p1 { width: 58px; height: 58px; font-size: 28px; }
+  .podium-avatar.p2, .podium-avatar.p3 { width: 46px; height: 46px; }
+  .podium-name { font-size: 12px; font-weight: 700; margin-top: 6px; text-align: center; max-width: 70px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .podium-score { font-size: 13px; font-weight: 800; color: var(--gold); }
+  .podium-stand { display: flex; align-items: center; justify-content: center; width: 70px; border-radius: 6px 6px 0 0; margin-top: 6px; font-size: 16px; }
+  .podium-stand.s1 { height: 60px; background: linear-gradient(180deg, #C8A84B, #a8882b); }
+  .podium-stand.s2 { height: 44px; background: linear-gradient(180deg, #9e9e9e, #757575); }
+  .podium-stand.s3 { height: 32px; background: linear-gradient(180deg, #a0826d, #795548); }
+
+  .rank-list { padding: 0 14px; display: flex; flex-direction: column; gap: 8px; }
+  .rank-item { background: var(--card); border-radius: 10px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; border: 1px solid var(--border); cursor: pointer; transition: border-color 0.2s; }
+  .rank-item:hover { border-color: var(--gold); }
+  .rank-num { width: 24px; font-size: 14px; font-weight: 800; text-align: center; color: var(--text2); }
+  .rank-num.r1 { color: #FFD700; }
+  .rank-num.r2 { color: #C0C0C0; }
+  .rank-num.r3 { color: #CD7F32; }
+  .rank-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+  .rank-info { flex: 1; }
+  .rank-name { display: block; font-size: 14px; font-weight: 700; }
+  .rank-sub { display: block; font-size: 12px; color: var(--text2); margin-top: 2px; }
+  .rank-score { font-size: 18px; font-weight: 800; color: var(--gold); }
+  .rank-wins { font-size: 11px; color: var(--text2); text-align: right; margin-top: 2px; }
+
+  /* 赛事记录 */
+  .activity-list { padding: 0 14px; display: flex; flex-direction: column; gap: 10px; }
+  .activity-card { background: var(--card); border-radius: 12px; padding: 14px 16px; border: 1px solid var(--border); }
+  .act-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .act-name { font-size: 15px; font-weight: 800; }
+  .act-badge { background: rgba(200,168,75,0.15); border: 1px solid rgba(200,168,75,0.4); color: var(--gold); font-size: 11px; padding: 2px 8px; border-radius: 10px; }
+  .act-date { font-size: 12px; color: var(--text2); margin-bottom: 6px; }
+  .act-desc { font-size: 13px; color: var(--text2); margin-bottom: 10px; }
+  .act-results { display: flex; flex-direction: column; gap: 5px; }
+  .act-result-item { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+  .act-result-rank { width: 28px; text-align: center; font-size: 16px; }
+  .act-result-rank-text { font-size: 12px; color: var(--text2); width: 28px; text-align: center; }
+  .act-result-team { flex: 1; color: var(--text); font-weight: 500; }
+  .act-result-score { color: var(--gold); font-weight: 800; }
+
+  /* ===== 个人积分条 ===== */
+  .score-bars { padding: 4px 0; }
+  .score-bar-row { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+  .score-bar-label { font-size: 11px; color: var(--text2); width: 60px; text-align: right; }
+  .score-bar-track { flex: 1; height: 6px; background: var(--card2); border-radius: 3px; overflow: hidden; }
+  .score-bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--gold), var(--gold2)); transition: width 0.6s ease; }
+  .score-bar-val { font-size: 11px; color: var(--text2); width: 28px; }
+
+  /* ===== 分隔条 ===== */
+  .spacer { height: 12px; }
+  .spacer-sm { height: 6px; }
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- 顶部导航（详情页用） -->
+  <div id="topbar" class="topbar" style="display:none">
+    <div class="topbar-back" onclick="goBack()">‹</div>
+    <div class="topbar-title" id="topbar-title">战队详情</div>
+  </div>
+
+  <!-- 内容区域 -->
+  <div class="page-content" id="page-content">
+    <!-- 动态渲染各页面 -->
+  </div>
+
+  <!-- 底部TabBar -->
+  <div id="tabbar">
+    <div class="tab-item active" data-tab="home" onclick="switchTab('home')">
+      <span class="tab-icon">🏠</span>
+      <span class="tab-label">首页</span>
+    </div>
+    <div class="tab-item" data-tab="teams" onclick="switchTab('teams')">
+      <span class="tab-icon">⚔️</span>
+      <span class="tab-label">战队</span>
+    </div>
+    <div class="tab-item" data-tab="ranking" onclick="switchTab('ranking')">
+      <span class="tab-icon">🏆</span>
+      <span class="tab-label">排名</span>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ==================== 数据 ==================== */
+const teamsData = [
+  { id: 1, name: '第一队', avatar: '🔥', color: '#e94560', captain: '喵菲',
+    description: '双刀先锋队，以攻为守，战斗力强悍',
+    members: [
+      { name: '喵菲',   score: '12w+', weapon: '双刀', isCaptain: true  },
+      { name: '芸汐',   score: '11w+', weapon: '棘梦', isCaptain: false },
+      { name: '大猛一', score: '10w+', weapon: '棘梦', isCaptain: false },
+      { name: '祈屿',   score: '9w+',  weapon: '棘梦', isCaptain: false }
+    ]
+  },
+  { id: 2, name: '第二队', avatar: '⚡', color: '#f5a623', captain: '改名必出绝世金',
+    description: '电弓棘梦混编队，攻守兼备',
+    members: [
+      { name: '改名必出绝世金', score: '8w+', weapon: '棘梦', isCaptain: true  },
+      { name: '户晨风',         score: '7w+', weapon: '长枪', isCaptain: false },
+      { name: '热心网友小陈',   score: '7w+', weapon: '电弓', isCaptain: false },
+      { name: '枭魂儿',         score: '8w+', weapon: '棘梦', isCaptain: false }
+    ]
+  },
+  { id: 3, name: '第三队', avatar: '❄️', color: '#4ecdc4', captain: 'SKMO',
+    description: '冰锤电弓配合，团战控场高手',
+    members: [
+      { name: 'SKMO',       score: '6w+', weapon: '棘梦', isCaptain: true  },
+      { name: '荒原小风',   score: '7w+', weapon: '电弓', isCaptain: false },
+      { name: '啷个哩个啷', score: '8w+', weapon: '冰锤', isCaptain: false },
+      { name: '先吃饭叭',   score: '6w+', weapon: '棘梦', isCaptain: false }
+    ]
+  },
+  { id: 4, name: '第四队', avatar: '🛡️', color: '#7c4dff', captain: '薛蜀黍',
+    description: '全棘梦队，攻击速度快，输出稳定',
+    members: [
+      { name: '薛蜀黍',   score: '11w+', weapon: '棘梦', isCaptain: true  },
+      { name: '李灵儿',   score: '11w+', weapon: '棘梦', isCaptain: false },
+      { name: '真没招了', score: '10w+', weapon: '棘梦', isCaptain: false },
+      { name: '郁枫',     score: '13w+', weapon: '棘梦', isCaptain: false }
+    ]
+  },
+  { id: 5, name: '第五队', avatar: '💀', color: '#ff6b35', captain: '一方通行',
+    description: '顶尖战力天花板队，全服最强输出阵容',
+    members: [
+      { name: '一方通行', score: '16w+', weapon: '棘梦', isCaptain: true  },
+      { name: '蟑螂恶霸', score: '26w+', weapon: '双刀', isCaptain: false },
+      { name: '蝎子莱莱', score: '11w+', weapon: '电弓', isCaptain: false },
+      { name: 'KK丶丶',   score: '13w+', weapon: '棘梦', isCaptain: false }
+    ]
+  },
+  { id: 6, name: '第六队', avatar: '🌸', color: '#e91e8c', captain: '青影',
+    description: '棘梦电弓双核，节奏把控出色',
+    members: [
+      { name: '青影',       score: '7w+', weapon: '棘梦', isCaptain: true  },
+      { name: '青歌',       score: '6w+', weapon: '冬至', isCaptain: false },
+      { name: '何以解千愁', score: '8W+', weapon: '棘梦', isCaptain: false },
+      { name: '何以消暑夏', score: '8W+', weapon: '电弓', isCaptain: false }
+    ]
+  },
+  { id: 7, name: '第七队', avatar: '🌙', color: '#3f51b5', captain: '眠十里星光',
+    description: '电弓棘梦远程输出队，爆发力强',
+    members: [
+      { name: '眠十里星光',   score: '7w+',  weapon: '电弓', isCaptain: true  },
+      { name: '山河皆入梦',   score: '10w+', weapon: '棘梦', isCaptain: false },
+      { name: '醉一枕星河',   score: '14w+', weapon: '棘梦', isCaptain: false },
+      { name: '爱在凛冬凋零', score: '13w+', weapon: '双刀', isCaptain: false }
+    ]
+  },
+  { id: 8, name: '第八队', avatar: '🌊', color: '#00bcd4', captain: '别让我卡主线',
+    description: '冰弓电锤近远配合，灵活机动',
+    members: [
+      { name: '别让我卡主线', score: '7w+', weapon: '电弓',       isCaptain: true  },
+      { name: '冒牌天神',     score: '8w+', weapon: '火/暗/物理弓', isCaptain: false },
+      { name: '怒琅',         score: '7w+', weapon: '其他',       isCaptain: false },
+      { name: '宇宙浪子',     score: '7w+', weapon: '冰弓',       isCaptain: false }
+    ]
+  }
+];
+
+const activitiesData = [
+  {
+    id: 1, name: '2月15日团战', date: '2026-02-15', type: '正式赛', status: '已结束',
+    desc: '首场正式团战，超凡神宠宝箱奖励池开启',
+    teamScores: [
+      { teamId: 1, score: 220, rank: 2,  members: ['喵菲(72)', '大猛一(72)'] },
+      { teamId: 2, score: 186, rank: 3,  members: ['改名必出绝世金(62)', '户晨风(62)', '热心网友小陈(62)'] },
+      { teamId: 4, score: 86,  rank: 4,  members: ['薛蜀黍(43)', '真没招了(43)'] },
+      { teamId: 5, score: 450, rank: 1,  members: ['一方通行(126)', '蟑螂恶霸(126)', 'KK(36)'] },
+      { teamId: 6, score: 78,  rank: 12, members: ['青影(26)', '青歌(26)', '何以解千愁(26)'] },
+      { teamId: 7, score: 118, rank: 5,  members: ['眠十里星光(39)', '山河皆入梦(39)', '爱在凛冬凋零(40)'] },
+    ]
+  },
+  {
+    id: 2, name: '2月21日团战', date: '2026-02-21', type: '正式赛', status: '已结束',
+    desc: '第二场团战，激烈争夺，创下历史最高积分',
+    teamScores: [
+      { teamId: 1, score: 216, rank: 2, members: ['喵菲(72)', '大猛一(72)'] },
+      { teamId: 2, score: 232, rank: 4, members: ['改名必出绝世金(58)', '户晨风(58)', '热心网友小陈(58)', '枭魂儿(58)'] },
+      { teamId: 3, score: 125, rank: 6, members: ['SKMO(45)', '荒原小风(41)', '啷个哩个啷(37)', '先吃饭叭(34)'] },
+      { teamId: 5, score: 229, rank: 1, members: ['一方通行(52)', '蟑螂恶霸(83)', '蝎子莱莱(83)', 'KK(73)'] },
+      { teamId: 6, score: 144, rank: 9, members: ['青影(36)', '青歌(36)', '何以解千愁(36)', '何以消暑夏(36)'] },
+      { teamId: 7, score: 165, rank: 3, members: ['眠十里星光(33)', '山河皆入梦(33)', '醉一枕星河(33)', '爱在凛冬凋零(73)'] },
+    ]
+  },
+  {
+    id: 3, name: '2月28日团战', date: '2026-02-28', type: '正式赛', status: '已结束',
+    desc: '第三场团战，第七队发挥亮眼',
+    teamScores: [
+      { teamId: 1, score: 296, rank: 2,  members: ['喵菲(73)', '大猛一(73)', '祈屿(71)'] },
+      { teamId: 2, score: 200, rank: 5,  members: ['改名必出绝世金(50)', '户晨风(50)', '热心网友小陈(50)', '枭魂儿(50)'] },
+      { teamId: 3, score: 184, rank: 7,  members: ['SKMO(46)', '荒原小风(46)', '啷个哩个啷(46)', '先吃饭叭(46)'] },
+      { teamId: 4, score: 200, rank: 4,  members: ['薛蜀黍(50)', '真没招了(?)', '宇宙浪子(50)', '书眠眠(50)'] },
+      { teamId: 5, score: 352, rank: 1,  members: ['一方通行(88)', '蟑螂恶霸(88)', 'KK(88)', '爱在凛冬凋零(88)'] },
+      { teamId: 6, score: 120, rank: 16, members: ['青影(30)', '青歌(30)', '何以解千愁(30)', '何以消暑夏(30)'] },
+      { teamId: 7, score: 203, rank: 3,  members: ['眠十里星光(51)', '山河皆入梦(51)', '醉一枕星河(51)'] },
+    ]
+  },
+  {
+    id: 4, name: '3月7日团战', date: '2026-03-07', type: '正式赛', status: '已结束',
+    desc: '第四场团战，第五队再度封神，多支队伍表现突出',
+    teamScores: [
+      { teamId: 1, score: 213, rank: 2,  members: ['喵菲(71)', '大猛一(71)', '祈屿(71)'] },
+      { teamId: 2, score: 268, rank: 3,  members: ['改名必出绝世金(67)', '户晨风(67)', '热心网友小陈(67)', '枭魂儿(67)'] },
+      { teamId: 3, score: 160, rank: 7,  members: ['SKMO(40)', '荒原小风(40)', '啷个哩个啷(34)', '先吃饭叭(40)'] },
+      { teamId: 4, score: 148, rank: 5,  members: ['薛蜀黍(48)', '真没招了(48)', '醉一枕星河(48)'] },
+      { teamId: 5, score: 424, rank: 1,  members: ['一方通行(106)', '蟑螂恶霸(106)', '蝎子莱莱(106)', 'KK(106)'] },
+      { teamId: 6, score: 64,  rank: 14, members: ['青影(24)', '青歌(24)', '何以解千愁(8)', '何以消暑夏(8)'] },
+      { teamId: 7, score: 144, rank: 5,  members: ['山河皆入梦(48)', '醉一枕星河(48)'] },
+      { teamId: 8, score: 25,  rank: 12, members: ['别让我卡主线(14)', '冒牌天神(25)', '怒琅(13)'] },
+    ]
+  }
+];
+
+const memberScores = [
+  { name: '一方通行',     team: '第五队', scores: [126,52,88,106], total: 372, weapon: '棘梦' },
+  { name: '蟑螂恶霸',     team: '第五队', scores: [126,83,88,106], total: 403, weapon: '双刀' },
+  { name: 'KK丶丶',       team: '第五队', scores: [36,73,88,106],  total: 303, weapon: '棘梦' },
+  { name: '蝎子莱莱',     team: '第五队', scores: [0,83,0,106],    total: 189, weapon: '电弓' },
+  { name: '喵菲',         team: '第一队', scores: [72,72,73,71],   total: 288, weapon: '双刀' },
+  { name: '大猛一',       team: '第一队', scores: [72,72,73,71],   total: 288, weapon: '棘梦' },
+  { name: '芸汐',         team: '第一队', scores: [0,0,0,61],      total: 61,  weapon: '棘梦' },
+  { name: '祈屿',         team: '第一队', scores: [0,0,71,71],     total: 142, weapon: '棘梦' },
+  { name: '改名必出绝世金',team: '第二队', scores: [62,58,50,67],  total: 237, weapon: '棘梦' },
+  { name: '户晨风',       team: '第二队', scores: [62,58,50,67],   total: 237, weapon: '长枪' },
+  { name: '热心网友小陈', team: '第二队', scores: [62,58,50,67],   total: 237, weapon: '电弓' },
+  { name: '枭魂儿',       team: '第二队', scores: [0,0,0,67],      total: 67,  weapon: '棘梦' },
+  { name: 'SKMO',         team: '第三队', scores: [0,45,46,40],    total: 131, weapon: '棘梦' },
+  { name: '荒原小风',     team: '第三队', scores: [43,41,46,40],   total: 170, weapon: '电弓' },
+  { name: '啷个哩个啷',   team: '第三队', scores: [21,37,46,34],   total: 138, weapon: '冰锤' },
+  { name: '先吃饭叭',     team: '第三队', scores: [19,34,46,40],   total: 139, weapon: '棘梦' },
+  { name: '薛蜀黍',       team: '第四队', scores: [43,41,50,48],   total: 182, weapon: '棘梦' },
+  { name: '真没招了',     team: '第四队', scores: [43,35,0,48],    total: 126, weapon: '棘梦' },
+  { name: '郁枫',         team: '第四队', scores: [0,0,0,0],       total: 0,   weapon: '棘梦' },
+  { name: '李灵儿',       team: '第四队', scores: [0,0,0,0],       total: 0,   weapon: '棘梦' },
+  { name: '青影',         team: '第六队', scores: [26,36,30,24],   total: 116, weapon: '棘梦' },
+  { name: '青歌',         team: '第六队', scores: [26,36,30,24],   total: 116, weapon: '冬至' },
+  { name: '何以解千愁',   team: '第六队', scores: [26,36,30,8],    total: 100, weapon: '棘梦' },
+  { name: '何以消暑夏',   team: '第六队', scores: [0,36,30,8],     total: 74,  weapon: '电弓' },
+  { name: '眠十里星光',   team: '第七队', scores: [39,33,51,0],    total: 123, weapon: '电弓' },
+  { name: '山河皆入梦',   team: '第七队', scores: [39,33,51,48],   total: 171, weapon: '棘梦' },
+  { name: '醉一枕星河',   team: '第七队', scores: [0,33,51,48],    total: 132, weapon: '棘梦' },
+  { name: '爱在凛冬凋零', team: '第七队', scores: [40,73,88,13],   total: 214, weapon: '双刀' },
+  { name: '别让我卡主线', team: '第八队', scores: [0,0,0,14],      total: 14,  weapon: '电弓' },
+  { name: '冒牌天神',     team: '第八队', scores: [0,41,22,61],    total: 124, weapon: '火/暗/物理弓' },
+  { name: '怒琅',         team: '第八队', scores: [0,0,29,13],     total: 42,  weapon: '其他' },
+  { name: '宇宙浪子',     team: '第八队', scores: [40,37,50,25],   total: 152, weapon: '冰弓' },
+];
+
+/* ==================== 计算数据 ==================== */
+function calcTeamTotals() {
+  const totals = {};
+  teamsData.forEach(t => { totals[t.id] = { totalScore: 0, wins: 0, participations: 0 }; });
+  activitiesData.forEach(act => {
+    act.teamScores.forEach(ts => {
+      if (totals[ts.teamId]) {
+        totals[ts.teamId].totalScore += ts.score;
+        totals[ts.teamId].participations++;
+        if (ts.rank === 1) totals[ts.teamId].wins++;
+      }
+    });
+  });
+  return totals;
+}
+
+const teamTotals = calcTeamTotals();
+const teamRanking = teamsData
+  .map(t => ({ ...t, ...teamTotals[t.id] }))
+  .sort((a, b) => b.totalScore - a.totalScore)
+  .map((t, i) => ({ ...t, rank: i + 1 }));
+
+const memberRanking = [...memberScores]
+  .sort((a, b) => b.total - a.total)
+  .map((m, i) => ({ ...m, rank: i + 1 }));
+
+/* ==================== 路由状态 ==================== */
+let currentTab = 'home';
+let navStack = [];
+let rankTab = 0;
+let searchKeyword = '';
+
+/* ==================== 工具函数 ==================== */
+function h(tag, attrs, ...children) {
+  const el = document.createElement(tag);
+  if (attrs) Object.entries(attrs).forEach(([k, v]) => {
+    if (k === 'style') el.style.cssText = v;
+    else if (k.startsWith('on')) el.addEventListener(k.slice(2).toLowerCase(), v);
+    else el.setAttribute(k, v);
+  });
+  children.flat(Infinity).forEach(c => {
+    if (c === null || c === undefined) return;
+    el.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+  });
+  return el;
+}
+
+function getRankEmoji(rank) {
+  if (rank === 1) return '🥇';
+  if (rank === 2) return '🥈';
+  if (rank === 3) return '🥉';
+  return null;
+}
+
+function getTeamById(id) { return teamsData.find(t => t.id === id); }
+
+/* ==================== 渲染函数 ==================== */
+
+/* ----- 首页 ----- */
+function renderHome() {
+  const topTeams = teamRanking.slice(0, 3);
+  const topMembers = memberRanking.slice(0, 5);
+  const latest = activitiesData[activitiesData.length - 1];
+
+  const frag = document.createDocumentFragment();
+
+  // Hero Banner
+  const hero = h('div', { class: 'hero' },
+    h('div', { class: 'hero-badge' }, '《瑶光听雨》2026赛季'),
+    h('div', { class: 'hero-title' }, '🌟 团战积分系统'),
+    h('div', { class: 'hero-subtitle' }, '实时战绩 · 积分排行 · 战队详情'),
+    h('div', { class: 'overview-row' },
+      h('div', { class: 'ov-item' }, h('span', { class: 'ov-num' }, String(teamsData.length)), h('span', { class: 'ov-lbl' }, '支战队')),
+      h('div', { class: 'ov-item' }, h('span', { class: 'ov-num' }, String(activitiesData.length)), h('span', { class: 'ov-lbl' }, '场比赛')),
+      h('div', { class: 'ov-item' }, h('span', { class: 'ov-num' }, String(memberScores.length)), h('span', { class: 'ov-lbl' }, '位成员'))
+    )
+  );
+  frag.appendChild(hero);
+
+  // TOP3
+  const top3Section = h('div', { class: 'section' },
+    h('div', { class: 'section-header' },
+      h('span', { class: 'section-title' }, '🏆 积分榜 TOP 3'),
+      h('span', { class: 'section-more', onclick: () => switchTab('ranking') }, '查看全部 ›')
+    ),
+    h('div', { class: 'top3-list' },
+      ...topTeams.map((team, i) =>
+        h('div', { class: 'top3-item', onclick: () => goTeamDetail(team.id) },
+          h('div', { class: 'top3-rank' }, i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉'),
+          h('div', { class: 'top3-avatar', style: `background:${team.color}` }, team.avatar),
+          h('div', { class: 'top3-info' },
+            h('span', { class: 'top3-name' }, team.name),
+            h('span', { class: 'top3-captain' }, '队长：' + team.captain)
+          ),
+          h('span', { class: 'top3-score' }, String(team.totalScore))
+        )
+      )
+    )
+  );
+  frag.appendChild(top3Section);
+
+  // 最近赛事
+  if (latest) {
+    const latestSection = h('div', { class: 'section' },
+      h('div', { class: 'section-header' }, h('span', { class: 'section-title' }, '📅 最近赛事')),
+      h('div', { class: 'latest-card' },
+        h('div', { class: 'latest-header' },
+          h('span', { class: 'latest-name' }, latest.name),
+          h('span', { class: 'latest-badge' }, latest.status)
+        ),
+        h('div', { class: 'latest-date' }, latest.date + ' | ' + latest.type),
+        h('div', { class: 'latest-desc' }, latest.desc)
+      )
+    );
+    frag.appendChild(latestSection);
+  }
+
+  // 个人TOP5
+  const memberSection = h('div', { class: 'section' },
+    h('div', { class: 'section-header' },
+      h('span', { class: 'section-title' }, '⚔️ 个人积分 TOP 5'),
+      h('span', { class: 'section-more', onclick: () => { switchTab('ranking'); setTimeout(() => setRankTab(1), 50); } }, '更多 ›')
+    ),
+    h('div', { class: 'mr-list' },
+      ...topMembers.map((m, i) =>
+        h('div', { class: 'mr-item' },
+          h('div', { class: `mr-rank ${i===0?'top1':i===1?'top2':i===2?'top3':''}` }, String(i + 1)),
+          h('div', { class: 'mr-avatar' }, m.name[0]),
+          h('div', { class: 'mr-info' },
+            h('span', { class: 'mr-name' }, m.name),
+            h('span', { class: 'mr-team' }, m.team + ' · ' + m.weapon)
+          ),
+          h('span', { class: 'mr-score' }, String(m.total))
+        )
+      )
+    )
+  );
+  frag.appendChild(memberSection);
+
+  // 战队入口按钮
+  frag.appendChild(h('div', { class: 'entry-btn', onclick: () => switchTab('teams') }, '⚔️ 查看所有战队'));
+  frag.appendChild(h('div', { class: 'spacer' }));
+
+  return frag;
+}
+
+/* ----- 战队列表 ----- */
+function renderTeams(keyword) {
+  keyword = (keyword || '').trim();
+  let filtered = teamsData
+    .map(t => ({ ...t, totalScore: teamTotals[t.id].totalScore }))
+    .sort((a, b) => b.totalScore - a.totalScore);
+
+  if (keyword) {
+    filtered = filtered.filter(t =>
+      t.name.includes(keyword) ||
+      t.captain.includes(keyword) ||
+      t.members.some(m => m.name.includes(keyword))
+    );
+  }
+
+  const frag = document.createDocumentFragment();
+
+  // 搜索框
+  const searchWrap = h('div', { class: 'search-wrap' });
+  const input = h('input', { class: 'search-input', type: 'text', placeholder: '搜索战队名/队长/成员...', value: keyword });
+  let searchTimer;
+  input.addEventListener('input', e => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+      searchKeyword = e.target.value;
+      const pc = document.getElementById('page-content');
+      const scrollTop = pc.scrollTop;
+      pc.innerHTML = '';
+      pc.appendChild(renderTeams(searchKeyword));
+      pc.scrollTop = scrollTop;
+    }, 200);
+  });
+  searchWrap.appendChild(input);
+  frag.appendChild(searchWrap);
+
+  // 战队列表
+  const list = h('div', { class: 'team-list' });
+  if (filtered.length === 0) {
+    list.appendChild(h('div', { class: 'empty-tip' }, '没有找到匹配的战队'));
+  } else {
+    filtered.forEach(team => {
+      const card = h('div', { class: 'team-card', onclick: () => goTeamDetail(team.id) },
+        h('div', { class: 'card-left' },
+          h('div', { class: 'team-avatar', style: `background:${team.color}` }, team.avatar)
+        ),
+        h('div', { class: 'card-right' },
+          h('div', { class: 'card-header' },
+            h('span', { class: 'team-name' }, team.name),
+            h('span', { class: 'team-score' }, String(team.totalScore) + '分')
+          ),
+          h('div', { class: 'team-captain' }, '队长：' + team.captain),
+          h('div', { class: 'team-desc' }, team.description),
+          h('div', { class: 'member-preview' },
+            ...team.members.map(m => h('span', { class: 'mp-tag' }, m.name))
+          )
+        )
+      );
+      list.appendChild(card);
+    });
+  }
+  frag.appendChild(list);
+  frag.appendChild(h('div', { class: 'spacer' }));
+  return frag;
+}
+
+/* ----- 战队详情 ----- */
+function renderTeamDetail(teamId) {
+  const team = getTeamById(teamId);
+  if (!team) return h('div', {}, '战队不存在');
+
+  // 比赛历史
+  const history = [];
+  activitiesData.forEach(act => {
+    const ts = act.teamScores.find(s => s.teamId === teamId);
+    if (ts) history.push({ name: act.name, date: act.date, score: ts.score, rank: ts.rank, members: ts.members });
+  });
+
+  // 成员积分详情
+  const memberDetails = team.members.map(m => {
+    const ms = memberScores.find(s => s.name === m.name);
+    return { ...m, totalScore: ms ? ms.total : 0, scores: ms ? ms.scores : [0,0,0,0] };
+  }).sort((a, b) => b.totalScore - a.totalScore);
+
+  const totalScore = history.reduce((s, h) => s + h.score, 0);
+  const maxMemberScore = Math.max(...memberDetails.map(m => m.totalScore), 1);
+
+  const frag = document.createDocumentFragment();
+
+  // 英雄区
+  const heroEl = h('div', { class: 'team-hero-detail', style: `background: linear-gradient(135deg, ${team.color}33 0%, #0a0a1a 100%)` },
+    h('div', { class: 'hero-top' },
+      h('div', { class: 'hero-avatar-lg', style: `background:${team.color}` }, team.avatar),
+      h('div', { class: 'hero-info-text' },
+        h('div', { class: 'hero-name-lg' }, team.name),
+        h('div', { class: 'hero-captain-lg' }, '👑 队长：' + team.captain),
+        h('div', { class: 'hero-desc-lg' }, team.description)
+      )
+    )
+  );
+  frag.appendChild(heroEl);
+
+  // 数据统计栏
+  const statsBar = h('div', { class: 'stats-bar' },
+    h('div', { class: 'stat-box' },
+      h('span', { class: 'stat-val', style: `color:${team.color}` }, String(totalScore)),
+      h('span', { class: 'stat-lbl' }, '累计积分')
+    ),
+    h('div', { class: 'stat-box' },
+      h('span', { class: 'stat-val', style: 'color:#ffd700' }, String(history.length)),
+      h('span', { class: 'stat-lbl' }, '参赛场次')
+    ),
+    h('div', { class: 'stat-box' },
+      h('span', { class: 'stat-val', style: 'color:#4ecdc4' }, String(team.members.length)),
+      h('span', { class: 'stat-lbl' }, '成员人数')
+    )
+  );
+  frag.appendChild(statsBar);
+  frag.appendChild(h('div', { class: 'spacer-sm' }));
+
+  // 队员阵容
+  const memberSection = h('div', { class: 'section' },
+    h('div', { class: 'section-header' }, h('span', { class: 'section-title' }, '⚔️ 队员阵容')),
+    h('div', { class: 'member-list' },
+      ...memberDetails.map((m, i) => {
+        const barWidth = maxMemberScore > 0 ? Math.round(m.totalScore / maxMemberScore * 100) : 0;
+        return h('div', { class: 'member-card' },
+          h('div', { class: 'member-rank' },
+            m.isCaptain
+              ? h('span', { class: 'captain-badge' }, '队长')
+              : h('span', { class: 'member-idx' }, String(i + 1))
+          ),
+          h('div', { class: 'member-avatar-box', style: `background:${team.color}` }, m.name[0]),
+          h('div', { class: 'member-info' },
+            h('div', { class: 'member-name' }, m.name),
+            h('div', { class: 'member-sub' }, m.weapon + ' | 战力：' + m.score),
+            h('div', { class: 'score-bar-track', style: 'margin-top:5px' },
+              h('div', { class: 'score-bar-fill', style: `width:${barWidth}%` })
+            )
+          ),
+          h('div', { class: 'member-score-box' },
+            h('span', { class: 'member-total-score' }, String(m.totalScore)),
+            h('span', { class: 'member-score-label' }, '积分')
+          )
+        );
+      })
+    )
+  );
+  frag.appendChild(memberSection);
+
+  // 比赛历史
+  const histSection = h('div', { class: 'section' },
+    h('div', { class: 'section-header' }, h('span', { class: 'section-title' }, '📊 比赛历史')),
+    history.length === 0
+      ? h('div', { class: 'empty-tip' }, '暂无比赛记录')
+      : h('div', { class: 'history-list' },
+          ...history.reverse().map(hi => {
+            const emoji = getRankEmoji(hi.rank);
+            return h('div', { class: 'history-item' },
+              h('div', { class: 'history-rank' },
+                emoji
+                  ? h('span', {}, emoji)
+                  : h('span', { class: 'history-rank-text' }, '第' + hi.rank + '名')
+              ),
+              h('div', { class: 'history-info' },
+                h('span', { class: 'history-name' }, hi.name),
+                h('span', { class: 'history-date' }, hi.date),
+                h('div', { class: 'history-members' }, hi.members.join(' · '))
+              ),
+              h('span', { class: 'history-score' }, '+' + hi.score)
+            );
+          })
+        )
+  );
+  frag.appendChild(histSection);
+  frag.appendChild(h('div', { class: 'spacer' }));
+
+  return frag;
+}
+
+/* ----- 排行榜 ----- */
+function renderRanking(tab) {
+  tab = tab !== undefined ? tab : rankTab;
+  rankTab = tab;
+  const frag = document.createDocumentFragment();
+
+  // Tab切换
+  const tabBar = h('div', { class: 'rank-tabs' },
+    h('div', { class: `rank-tab ${tab===0?'active':''}`, onclick: () => rerenderRanking(0) }, '⚔️ 战队'),
+    h('div', { class: `rank-tab ${tab===1?'active':''}`, onclick: () => rerenderRanking(1) }, '👤 个人'),
+    h('div', { class: `rank-tab ${tab===2?'active':''}`, onclick: () => rerenderRanking(2) }, '📋 赛事')
+  );
+  frag.appendChild(tabBar);
+  frag.appendChild(h('div', { class: 'spacer-sm' }));
+
+  if (tab === 0) {
+    // 战队排名 - 颁奖台
+    const p = teamRanking;
+    const podium = h('div', { class: 'podium' },
+      // 第二名
+      h('div', { class: 'podium-item', onclick: () => goTeamDetail(p[1].id) },
+        h('div', { class: 'podium-avatar p2', style: `background:${p[1].color}` }, p[1].avatar),
+        h('div', { class: 'podium-name' }, p[1].name),
+        h('div', { class: 'podium-score' }, String(p[1].totalScore)),
+        h('div', { class: 'podium-stand s2' }, '🥈')
+      ),
+      // 第一名
+      h('div', { class: 'podium-item', onclick: () => goTeamDetail(p[0].id) },
+        h('div', { class: 'podium-avatar p1', style: `background:${p[0].color}` }, p[0].avatar),
+        h('div', { class: 'podium-name' }, p[0].name),
+        h('div', { class: 'podium-score' }, String(p[0].totalScore)),
+        h('div', { class: 'podium-stand s1' }, '🥇')
+      ),
+      // 第三名
+      h('div', { class: 'podium-item', onclick: () => goTeamDetail(p[2].id) },
+        h('div', { class: 'podium-avatar p3', style: `background:${p[2].color}` }, p[2].avatar),
+        h('div', { class: 'podium-name' }, p[2].name),
+        h('div', { class: 'podium-score' }, String(p[2].totalScore)),
+        h('div', { class: 'podium-stand s3' }, '🥉')
+      )
+    );
+    frag.appendChild(podium);
+
+    // 完整列表（4名起）
+    const list = h('div', { class: 'rank-list' });
+    teamRanking.slice(3).forEach(team => {
+      list.appendChild(h('div', { class: 'rank-item', onclick: () => goTeamDetail(team.id) },
+        h('div', { class: 'rank-num' }, String(team.rank)),
+        h('div', { class: 'rank-avatar', style: `background:${team.color}` }, team.avatar),
+        h('div', { class: 'rank-info' },
+          h('span', { class: 'rank-name' }, team.name),
+          h('span', { class: 'rank-sub' }, '队长：' + team.captain + ' · ' + team.members.length + '人')
+        ),
+        h('div', {},
+          h('div', { class: 'rank-score' }, String(team.totalScore)),
+          h('div', { class: 'rank-wins' }, team.wins + '冠 ' + team.participations + '场')
+        )
+      ));
+    });
+    frag.appendChild(list);
+
+  } else if (tab === 1) {
+    // 个人排名
+    const maxScore = memberRanking[0].total || 1;
+    const list = h('div', { class: 'rank-list' });
+    memberRanking.forEach(m => {
+      const barW = Math.round(m.total / maxScore * 100);
+      const rankCls = m.rank === 1 ? 'r1' : m.rank === 2 ? 'r2' : m.rank === 3 ? 'r3' : '';
+      const emoji = getRankEmoji(m.rank);
+      list.appendChild(h('div', { class: 'rank-item' },
+        h('div', { class: `rank-num ${rankCls}` }, emoji || String(m.rank)),
+        h('div', { class: 'rank-avatar', style: 'background:var(--card2);font-size:16px;color:var(--gold);font-weight:700' }, m.name[0]),
+        h('div', { class: 'rank-info' },
+          h('span', { class: 'rank-name' }, m.name),
+          h('span', { class: 'rank-sub' }, m.team + ' · ' + m.weapon),
+          h('div', { class: 'score-bar-track', style: 'margin-top:5px' },
+            h('div', { class: 'score-bar-fill', style: `width:${barW}%` })
+          )
+        ),
+        h('div', { class: 'rank-score' }, String(m.total))
+      ));
+    });
+    frag.appendChild(list);
+
+  } else {
+    // 赛事记录
+    const list = h('div', { class: 'activity-list' });
+    [...activitiesData].reverse().forEach(act => {
+      const sortedScores = [...act.teamScores].sort((a, b) => a.rank - b.rank);
+      const card = h('div', { class: 'activity-card' },
+        h('div', { class: 'act-header' },
+          h('span', { class: 'act-name' }, act.name),
+          h('span', { class: 'act-badge' }, act.status)
+        ),
+        h('div', { class: 'act-date' }, act.date + ' · ' + act.type),
+        h('div', { class: 'act-desc' }, act.desc),
+        h('div', { class: 'act-results' },
+          ...sortedScores.map(ts => {
+            const team = getTeamById(ts.teamId);
+            const emoji = getRankEmoji(ts.rank);
+            return h('div', { class: 'act-result-item' },
+              emoji
+                ? h('span', { class: 'act-result-rank' }, emoji)
+                : h('span', { class: 'act-result-rank-text' }, '第' + ts.rank),
+              h('span', { class: 'act-result-team' }, team ? team.name : '未知战队'),
+              h('span', { class: 'act-result-score' }, '+' + ts.score)
+            );
+          })
+        )
+      );
+      list.appendChild(card);
+    });
+    frag.appendChild(list);
+  }
+
+  frag.appendChild(h('div', { class: 'spacer' }));
+  return frag;
+}
+
+function rerenderRanking(tab) {
+  rankTab = tab;
+  const pc = document.getElementById('page-content');
+  pc.innerHTML = '';
+  pc.appendChild(renderRanking(tab));
+  pc.scrollTop = 0;
+}
+
+function setRankTab(tab) {
+  rerenderRanking(tab);
+}
+
+/* ==================== 路由 ==================== */
+function switchTab(tab) {
+  currentTab = tab;
+  navStack = [];
+  searchKeyword = '';
+
+  // 更新tabbar
+  document.querySelectorAll('.tab-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.tab === tab);
+  });
+
+  // 隐藏/显示顶部栏
+  document.getElementById('topbar').style.display = 'none';
+  document.getElementById('tabbar').style.display = 'flex';
+
+  render();
+}
+
+function goTeamDetail(teamId) {
+  navStack.push({ type: 'team-detail', teamId });
+  document.getElementById('topbar').style.display = 'flex';
+  const team = getTeamById(teamId);
+  document.getElementById('topbar-title').textContent = team ? team.name : '战队详情';
+
+  // 隐藏tabbar（详情页沉浸式体验，可选：保留）
+  // document.getElementById('tabbar').style.display = 'none';
+
+  const pc = document.getElementById('page-content');
+  pc.innerHTML = '';
+  pc.appendChild(renderTeamDetail(teamId));
+  pc.scrollTop = 0;
+}
+
+function goBack() {
+  navStack.pop();
+  if (navStack.length === 0) {
+    document.getElementById('topbar').style.display = 'none';
+    document.getElementById('tabbar').style.display = 'flex';
+    render();
+  } else {
+    const last = navStack[navStack.length - 1];
+    if (last.type === 'team-detail') goTeamDetail(last.teamId);
+  }
+}
+
+function render() {
+  const pc = document.getElementById('page-content');
+  pc.innerHTML = '';
+  pc.scrollTop = 0;
+
+  if (currentTab === 'home') {
+    pc.appendChild(renderHome());
+  } else if (currentTab === 'teams') {
+    pc.appendChild(renderTeams(searchKeyword));
+  } else if (currentTab === 'ranking') {
+    pc.appendChild(renderRanking(rankTab));
+  }
+}
+
+/* ==================== 初始化 ==================== */
+render();
+</script>
+</body>
+</html>

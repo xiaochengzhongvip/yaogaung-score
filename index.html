@@ -242,6 +242,56 @@ const events = [
       { team1: '第七队', team2: '第八队', winner: '第七队' },
       { team1: '第九队', team2: '第十队', winner: '第九队' }
     ]
+  },
+  {
+    week: 5,
+    date: '2026-03-18',
+    battles: [
+      { team1: '第一队', team2: '第六队', winner: '第六队' },
+      { team1: '第二队', team2: '第四队', winner: '第二队' },
+      { team1: '第三队', team2: '第八队', winner: '第三队' },
+      { team1: '第五队', team2: '第七队', winner: '第五队' }
+    ]
+  },
+  {
+    week: 4,
+    date: '2026-03-17',
+    battles: [
+      { team1: '第一队', team2: '第四队', winner: '第一队' },
+      { team1: '第二队', team2: '第六队', winner: '第二队' },
+      { team1: '第三队', team2: '第五队', winner: '第三队' },
+      { team1: '第七队', team2: '第八队', winner: '第七队' }
+    ]
+  },
+  {
+    week: 3,
+    date: '2026-03-16',
+    battles: [
+      { team1: '第一队', team2: '第五队', winner: '第一队' },
+      { team1: '第二队', team2: '第三队', winner: '第二队' },
+      { team1: '第四队', team2: '第七队', winner: '第四队' },
+      { team1: '第六队', team2: '第八队', winner: '第六队' }
+    ]
+  },
+  {
+    week: 2,
+    date: '2026-03-15',
+    battles: [
+      { team1: '第一队', team2: '第三队', winner: '第三队' },
+      { team1: '第二队', team2: '第五队', winner: '第二队' },
+      { team1: '第四队', team2: '第六队', winner: '第四队' },
+      { team1: '第七队', team2: '第八队', winner: '第八队' }
+    ]
+  },
+  {
+    week: 1,
+    date: '2026-03-14',
+    battles: [
+      { team1: '第一队', team2: '第二队', winner: '第一队' },
+      { team1: '第三队', team2: '第四队', winner: '第三队' },
+      { team1: '第五队', team2: '第六队', winner: '第五队' },
+      { team1: '第七队', team2: '第八队', winner: '第七队' }
+    ]
   }
 ];
 
@@ -553,60 +603,69 @@ function setRankTab(tab) {
 function renderEvents() {
   const frag = document.createDocumentFragment();
 
-  // 计算战队总积分排行
-  const teamScores = teams.map(t => {
-    const teamRecords = records.filter(r => r.team === t.name);
-    const totalScore = teamRecords.reduce((sum, r) => sum + r.score, 0);
-    return { ...t, totalScore, memberCount: teamRecords.length };
-  }).sort((a, b) => b.totalScore - a.totalScore);
+  // 计算每周各队积分
+  events.forEach(week => {
+    week.teamScores = {};
+    week.battles.forEach(b => {
+      week.teamScores[b.winner] = (week.teamScores[b.winner] || 0) + 30;
+    });
+  });
 
-  const top3 = teamScores.slice(0, 3);
+  // 获取每周TOP3
+  function getWeekTop3(week) {
+    return Object.entries(week.teamScores)
+      .map(([name, score]) => ({ name, score }))
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3);
+  }
 
-  // 标题
-  frag.appendChild(h('div', { class: 'section-header' },
-    h('div', { class: 'section-title' }, '🏆 第6周团战 · 2026-03-21'),
-    h('span', { class: 'section-tag' }, 'TOP3 战队总结')
-  ));
-
-  // TOP3 战队卡片
   const medals = ['🥇', '🥈', '🥉'];
-  const topCard = h('div', { class: 'card' });
-  top3.forEach((team, i) => {
-    topCard.appendChild(h('div', { class: 'event-battle' },
-      h('div', { style: 'display:flex;align-items:center;gap:8px;flex:1;' },
-        h('span', { style: 'font-size:20px;' }, medals[i]),
-        h('div', { style: 'flex:1;' },
-          h('div', { style: 'font-weight:700;font-size:14px;color:var(--gold);' }, team.icon + ' ' + team.name),
-          h('div', { style: 'font-size:12px;color:var(--text2);' }, '队长：' + team.captain + ' · ' + team.memberCount + '人')
+
+  events.forEach(week => {
+    const top3 = getWeekTop3(week);
+
+    // 周标题
+    frag.appendChild(h('div', { class: 'section-header' },
+      h('div', { class: 'section-title' }, '🏆 第' + week.week + '周 · ' + week.date),
+      h('span', { class: 'section-tag' }, 'TOP3 战队')
+    ));
+
+    // TOP3 卡片
+    const card = h('div', { class: 'card' });
+    top3.forEach((t, i) => {
+      const team = teams.find(x => x.name === t.name) || {};
+      card.appendChild(h('div', { class: 'event-battle' },
+        h('div', { style: 'display:flex;align-items:center;gap:8px;flex:1;' },
+          h('span', { style: 'font-size:18px;' }, medals[i]),
+          h('div', { style: 'flex:1;' },
+            h('div', { style: 'font-weight:700;font-size:14px;color:var(--gold);' }, (team.icon || '') + ' ' + t.name),
+            h('div', { style: 'font-size:12px;color:var(--text2);' }, '队长：' + (team.captain || '—'))
+          )
+        ),
+        h('div', { style: 'text-align:right;' },
+          h('div', { style: 'font-weight:700;font-size:18px;color:var(--gold);' }, '+' + t.score),
+          h('div', { style: 'font-size:11px;color:var(--text2);' }, '本轮积分')
         )
-      ),
-      h('div', { style: 'text-align:right;' },
-        h('div', { style: 'font-weight:700;font-size:18px;color:var(--gold);' }, team.totalScore),
-        h('div', { style: 'font-size:11px;color:var(--text2);' }, '总积分')
-      )
-    ));
-  });
-  frag.appendChild(topCard);
+      ));
+    });
 
-  // 团战结果
-  frag.appendChild(h('div', { class: 'section-header' },
-    h('div', { class: 'section-title' }, '⚔️ 团战对战'),
-    h('span', { class: 'section-tag' }, events[0].battles.length + '场对战')
-  ));
+    // 对战结果
+    const battleCard = h('div', { class: 'card' });
+    week.battles.forEach(battle => {
+      const isWinner1 = battle.winner === battle.team1;
+      battleCard.appendChild(h('div', { class: 'event-battle' },
+        h('div', { class: 'event-battle-teams' },
+          h('span', { style: 'font-weight:600;' + (isWinner1 ? 'color:#4ade80;' : 'color:#e8e8f0;') }, battle.team1),
+          h('span', { class: 'event-battle-vs' }, ' VS '),
+          h('span', { style: 'font-weight:600;' + (!isWinner1 ? 'color:#4ade80;' : 'color:#e8e8f0;') }, battle.team2)
+        ),
+        h('div', { class: isWinner1 ? 'event-battle-winner' : 'event-battle-loser' }, isWinner1 ? battle.team1 + '胜' : battle.team2 + '胜')
+      ));
+    });
 
-  const battleCard = h('div', { class: 'card' });
-  events[0].battles.forEach(battle => {
-    const isWinner1 = battle.winner === battle.team1;
-    battleCard.appendChild(h('div', { class: 'event-battle' },
-      h('div', { class: 'event-battle-teams' },
-        h('span', { style: 'font-weight:600;' + (isWinner1 ? 'color:#4ade80;' : 'color:#e8e8f0;') }, battle.team1),
-        h('span', { class: 'event-battle-vs' }, ' VS '),
-        h('span', { style: 'font-weight:600;' + (!isWinner1 ? 'color:#4ade80;' : 'color:#e8e8f0;') }, battle.team2)
-      ),
-      h('div', { class: isWinner1 ? 'event-battle-winner' : 'event-battle-loser' }, isWinner1 ? battle.team1 + '胜' : battle.team2 + '胜')
-    ));
+    frag.appendChild(card);
+    frag.appendChild(battleCard);
   });
-  frag.appendChild(battleCard);
 
   frag.appendChild(h('div', { class: 'spacer' }));
   return frag;

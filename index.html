@@ -57,13 +57,11 @@
   .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text2); }
 
   /* ===== 主页核心成员 ===== */
-  .core-card { display: flex; align-items: center; gap: 12px; padding: 12px 0; }
-  .core-card + .core-card { border-top: 1px solid var(--border); }
-  .core-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--gold) 0%, #8B6914 100%); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
-  .core-info { flex: 1; }
-  .core-role { font-size: 11px; color: var(--gold); font-weight: 600; margin-bottom: 2px; }
-  .core-name { font-size: 14px; font-weight: 600; }
-  .core-team { font-size: 11px; color: var(--text2); }
+  .core-roles-bar { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 2px; }
+  .core-role-chip { display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: linear-gradient(135deg, rgba(212,175,55,0.15) 0%, rgba(139,105,20,0.1) 100%); border: 1px solid rgba(212,175,55,0.3); border-radius: 20px; }
+  .core-role-chip .role-tag { font-size: 10px; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: 0.5px; }
+  .core-role-chip .role-divider { width: 1px; height: 12px; background: rgba(212,175,55,0.4); }
+  .core-role-chip .role-name { font-size: 13px; font-weight: 600; color: #e8e8f0; }
 
   /* ===== 战队列表 ===== */
   .team-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -283,18 +281,15 @@ function renderHome() {
     h('span', { class: 'section-tag' }, '2026赛季')
   ));
 
-  const coreCard = h('div', { class: 'card' });
-  coreRoles.forEach((cr, i) => {
-    coreCard.appendChild(h('div', { class: 'core-card' },
-      h('div', { class: 'core-avatar' }, getNameFirstChar(cr.name)),
-      h('div', { class: 'core-info' },
-        h('div', { class: 'core-role' }, cr.role),
-        h('div', { class: 'core-name' }, cr.name),
-        h('div', { class: 'core-team' }, cr.team)
-      )
+  const rolesBar = h('div', { class: 'core-roles-bar' });
+  coreRoles.forEach(cr => {
+    rolesBar.appendChild(h('div', { class: 'core-role-chip' },
+      h('span', { class: 'role-tag' }, cr.role),
+      h('div', { class: 'role-divider' }),
+      h('span', { class: 'role-name' }, cr.name)
     ));
   });
-  frag.appendChild(coreCard);
+  frag.appendChild(rolesBar);
 
   // 战队总览
   frag.appendChild(h('div', { class: 'section-header' },
@@ -548,7 +543,7 @@ function setRankTab(tab) {
 function renderEvents() {
   const frag = document.createDocumentFragment();
 
-  // 根据 records 计算各队总积分
+  // 根据 records 计算各队总积分（整体排名，所有周期共用）
   const teamScores = teams.map(t => {
     const teamRecords = records.filter(r => r.team === t.name);
     const totalScore = teamRecords.reduce((sum, r) => sum + r.score, 0);

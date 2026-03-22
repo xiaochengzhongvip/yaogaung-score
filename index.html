@@ -184,12 +184,12 @@ const records = [
   { name: '蝎子莱莱', team: '第五队', job: '电弓', score: 88, games: 3 },
   { name: 'KK、、', team: '第五队', job: '棘梦', score: 88, games: 3 },
   { name: '蟑螂恶霸', team: '第五队', job: '双刀', score: 88, games: 3 },
-  { name: '热心网友小陈', team: '第二队', job: '双刀', score: 63, games: 10 },
+  { name: '热心网友小陈', team: '第二队', job: '电弓', score: 63, games: 10 },
   { name: '户晨风', team: '第二队', job: '电弓', score: 63, games: 10 },
   { name: '枭魂儿', team: '第二队', job: '双刀', score: 63, games: 10 },
   { name: '改名必出绝世金', team: '第二队', job: '电弓', score: 63, games: 10 },
   { name: '大猛一', team: '第一队', job: '双刀', score: 61, games: 8 },
-  { name: '李灵儿', team: '第一队', job: '电弓', score: 61, games: 8 },
+  { name: '李灵儿', team: '第一队', job: '棘梦', score: 61, games: 8 },
   { name: '祈屿', team: '第一队', job: '棘梦', score: 61, games: 8 },
   { name: '喵菲', team: '第一队', job: '双刀', score: 61, games: 8 },
   { name: '真没招了', team: '第四队', job: '电弓', score: 56, games: 9 },
@@ -308,7 +308,7 @@ function renderHome() {
         team.captain ? h('span', { class: 'team-badge' }, team.captain) : null
       ),
       h('div', { class: 'team-stats' },
-        h('div', { class: 'team-stat' }, '积分 ', h('span', {}, totalScore)),
+        h('div', { class: 'team-stat' }, '总积分 ', h('span', {}, totalScore)),
         h('div', { class: 'team-stat' }, '人数 ', h('span', {}, team.members.length))
       )
     );
@@ -332,7 +332,10 @@ function renderHome() {
       h('div', { class: 'rank-icon' }, getNameFirstChar(r.name)),
       h('div', { class: 'rank-name' }, r.name),
       h('div', { class: 'rank-team' }, r.team + ' · ' + r.job),
-      h('div', { class: 'rank-score' }, r.score)
+      h('div', { style: 'text-align:right;' },
+        h('div', { class: 'rank-score' }, r.score),
+        h('div', { class: 'rank-games' }, '总积分')
+      )
     ));
   });
   frag.appendChild(rankCard);
@@ -378,7 +381,7 @@ function renderTeams(keyword) {
           team.captain ? h('span', { class: 'team-badge' }, team.captain) : null
         ),
         h('div', { class: 'team-stats' },
-          h('div', { class: 'team-stat' }, '积分 ', h('span', {}, totalScore)),
+          h('div', { class: 'team-stat' }, '总积分 ', h('span', {}, totalScore)),
           h('div', { class: 'team-stat' }, '人数 ', h('span', {}, team.members.length))
         )
       ));
@@ -506,7 +509,10 @@ function renderRanking(tab) {
     frag.appendChild(list);
 
     // 战队战绩
-    frag.appendChild(h('div', { class: 'section-title' }, '战队战绩'));
+    frag.appendChild(h('div', { class: 'section-header' },
+      h('div', { class: 'section-title' }, '⚔️ 战队战绩'),
+      h('span', { class: 'section-tag' }, '2026-03-21')
+    ));
     const actCard = h('div', { class: 'card act-card' });
     teamScores.slice(0, 8).forEach(ts => {
       actCard.appendChild(h('div', { class: 'act-row' },

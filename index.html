@@ -578,8 +578,12 @@ function render() {
 }
 
 /* ==================== 初始化 ==================== */
-/* v20260322 */
-render();
+/* v20260322b */
+try {
+  render();
+} catch(e) {
+  document.getElementById('page-content').innerHTML = '<div style="color:#fff;padding:20px;font-size:14px;">加载错误: ' + e.message + '</div>';
+}
 </script>
 </body>
 </html>

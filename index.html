@@ -305,7 +305,7 @@ function renderHome() {
       h('div', { class: 'team-name' },
         h('span', {}, team.icon),
         h('span', {}, team.name),
-        team.captain ? h('span', { class: 'team-badge' }, '长') : null
+        team.captain ? h('span', { class: 'team-badge' }, team.captain) : null
       ),
       h('div', { class: 'team-stats' },
         h('div', { class: 'team-stat' }, '积分 ', h('span', {}, totalScore)),
@@ -375,7 +375,7 @@ function renderTeams(keyword) {
         h('div', { class: 'team-name' },
           h('span', {}, team.icon),
           h('span', {}, team.name),
-          team.captain ? h('span', { class: 'team-badge' }, '长') : null
+          team.captain ? h('span', { class: 'team-badge' }, team.captain) : null
         ),
         h('div', { class: 'team-stats' },
           h('div', { class: 'team-stat' }, '积分 ', h('span', {}, totalScore)),
@@ -414,6 +414,7 @@ function renderTeamDetail(teamId) {
     h('div', { class: 'team-meta' },
       h('div', { class: 'team-title' }, team.name),
       h('div', { class: 'team-summary' },
+        '队长：', h('span', { style: 'color:var(--gold);' }, team.captain), ' · ',
         '总积分 ', h('span', {}, totalScore), ' · ',
         h('span', {}, teamRecords.length), ' 名成员'
       )
@@ -431,7 +432,7 @@ function renderTeamDetail(teamId) {
       h('div', { class: 'member-job' }, r.job),
       h('div', { style: 'text-align:right' },
         h('div', { class: 'member-score' }, r.score),
-        h('div', { class: 'member-games' }, r.games + '场')
+        h('div', { class: 'member-games' }, '总积分')
       )
     ));
   });
@@ -472,7 +473,7 @@ function renderRanking(tab) {
         h('div', { class: 'rank-team' }, r.team),
         h('div', { style: 'text-align:right' },
           h('div', { class: 'rank-score' }, r.score),
-          h('div', { class: 'rank-games' }, r.games + '场')
+          h('div', { class: 'rank-games' }, '总积分')
         )
       ));
     });
@@ -494,8 +495,8 @@ function renderRanking(tab) {
       list.appendChild(h('div', { class: 'rank-row', onclick: () => goTeamDetail(t.id) },
         h('div', { class: 'rank-num' }, medals[i] ? '' : i + 1),
         h('div', { class: 'rank-icon' }, icon),
-        h('div', { class: 'rank-name' }, t.name + (t.captain ? ' ⭐' : '')),
-        h('div', { class: 'rank-team' }, t.memberCount + '人'),
+        h('div', { class: 'rank-name' }, t.name),
+        h('div', { class: 'rank-team' }, t.captain + ' · ' + t.memberCount + '人'),
         h('div', { style: 'text-align:right' },
           h('div', { class: 'rank-score' }, t.totalScore),
           h('div', { class: 'rank-games' }, '总积分')

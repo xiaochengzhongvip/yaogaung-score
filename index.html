@@ -240,9 +240,10 @@ function h(tag, attrs, ...children) {
     else if (k === 'onclick') el.onclick = v;
     else el.setAttribute(k, v);
   }
-  children.forEach(child => {
-    if (typeof child === 'string') el.appendChild(document.createTextNode(child));
-    else if (child) el.appendChild(child);
+  children.flat(Infinity).forEach(child => {
+    if (child === null || child === undefined || child === false) return;
+    if (typeof child === 'string' || typeof child === 'number') el.appendChild(document.createTextNode(String(child)));
+    else if (child instanceof Node) el.appendChild(child);
   });
   return el;
 }

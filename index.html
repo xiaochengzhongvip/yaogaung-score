@@ -125,6 +125,18 @@
 
   /* ===== 间距 ===== */
   .spacer { height: 10px; }
+
+  /* ===== 赛事Tab ===== */
+  .event-week { margin: 12px 14px 6px; }
+  .event-week-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .event-week-num { font-size: 15px; font-weight: 700; color: var(--gold); }
+  .event-week-date { font-size: 12px; color: var(--text2); }
+  .event-battles { }
+  .event-battle { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: var(--card); border-radius: var(--radius); margin-bottom: 6px; border: 1px solid var(--border); }
+  .event-battle-teams { flex: 1; display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text); }
+  .event-battle-vs { color: var(--text2); font-size: 11px; }
+  .event-battle-winner { color: #4ade80; font-size: 12px; min-width: 48px; text-align: right; }
+  .event-battle-loser { color: #f87171; font-size: 12px; min-width: 48px; text-align: right; }
 </style>
 </head>
 <body>
@@ -146,6 +158,10 @@
     <div class="tab-item" data-tab="ranking" onclick="switchTab('ranking')">
       <span class="tab-icon">📊</span>
       <span class="tab-label">排行</span>
+    </div>
+    <div class="tab-item" data-tab="events" onclick="switchTab('events')">
+      <span class="tab-icon">🏆</span>
+      <span class="tab-label">赛事</span>
     </div>
   </div>
 </div>
@@ -213,6 +229,70 @@ const coreRoles = [
   { role: '副团长', name: '蝎子莱莱', team: '第五队' },
   { role: '金主', name: '蟑螂恶霸', team: '第五队' },
   { role: '外交', name: 'KK、、', team: '第五队' }
+];
+
+const events = [
+  {
+    week: 1,
+    date: '2026-03-14',
+    battles: [
+      { team1: '第一队', team2: '第二队', winner: '第一队' },
+      { team1: '第三队', team2: '第四队', winner: '第三队' },
+      { team1: '第五队', team2: '第六队', winner: '第五队' },
+      { team1: '第七队', team2: '第八队', winner: '第七队' }
+    ]
+  },
+  {
+    week: 2,
+    date: '2026-03-15',
+    battles: [
+      { team1: '第一队', team2: '第三队', winner: '第三队' },
+      { team1: '第二队', team2: '第五队', winner: '第二队' },
+      { team1: '第四队', team2: '第六队', winner: '第四队' },
+      { team1: '第七队', team2: '第八队', winner: '第八队' }
+    ]
+  },
+  {
+    week: 3,
+    date: '2026-03-16',
+    battles: [
+      { team1: '第一队', team2: '第五队', winner: '第一队' },
+      { team1: '第二队', team2: '第三队', winner: '第二队' },
+      { team1: '第四队', team2: '第七队', winner: '第四队' },
+      { team1: '第六队', team2: '第八队', winner: '第六队' }
+    ]
+  },
+  {
+    week: 4,
+    date: '2026-03-17',
+    battles: [
+      { team1: '第一队', team2: '第四队', winner: '第一队' },
+      { team1: '第二队', team2: '第六队', winner: '第二队' },
+      { team1: '第三队', team2: '第五队', winner: '第三队' },
+      { team1: '第七队', team2: '第八队', winner: '第七队' }
+    ]
+  },
+  {
+    week: 5,
+    date: '2026-03-18',
+    battles: [
+      { team1: '第一队', team2: '第六队', winner: '第六队' },
+      { team1: '第二队', team2: '第四队', winner: '第二队' },
+      { team1: '第三队', team2: '第八队', winner: '第三队' },
+      { team1: '第五队', team2: '第七队', winner: '第五队' }
+    ]
+  },
+  {
+    week: 6,
+    date: '2026-03-21',
+    battles: [
+      { team1: '第一队', team2: '第三队', winner: '第一队' },
+      { team1: '第二队', team2: '第四队', winner: '第二队' },
+      { team1: '第五队', team2: '第六队', winner: '第五队' },
+      { team1: '第七队', team2: '第八队', winner: '第七队' },
+      { team1: '第九队', team2: '第十队', winner: '第九队' }
+    ]
+  }
 ];
 
 /* ==================== 辅助函数 ==================== */
@@ -519,6 +599,46 @@ function setRankTab(tab) {
   rerenderRanking(tab);
 }
 
+/* ==================== 赛事渲染 ==================== */
+function renderEvents() {
+  const frag = document.createDocumentFragment();
+
+  // 统计概览
+  const totalBattles = events.reduce((sum, w) => sum + w.battles.length, 0);
+  frag.appendChild(h('div', { class: 'section-header' },
+    h('div', { class: 'section-title' }, '🏆 团战记录'),
+    h('span', { class: 'section-tag' }, events.length + '周 · ' + totalBattles + '场对战')
+  ));
+
+  // 逐周显示
+  [...events].reverse().forEach(week => {
+    const card = h('div', { class: 'card' });
+
+    week.battles.forEach((battle, i) => {
+      const isWinner1 = battle.winner === battle.team1;
+      card.appendChild(h('div', { class: 'event-battle' },
+        h('div', { class: 'event-battle-teams' },
+          h('span', { style: 'font-weight:600;' + (isWinner1 ? 'color:#4ade80;' : 'color:#e8e8f0;') }, battle.team1),
+          h('span', { class: 'event-battle-vs' }, ' VS '),
+          h('span', { style: 'font-weight:600;' + (!isWinner1 ? 'color:#4ade80;' : 'color:#e8e8f0;') }, battle.team2)
+        ),
+        h('div', { class: isWinner1 ? 'event-battle-winner' : 'event-battle-loser' }, isWinner1 ? battle.team1 + '胜' : battle.team2 + '胜')
+      ));
+    });
+
+    frag.appendChild(h('div', { class: 'event-week' },
+      h('div', { class: 'event-week-header' },
+        h('span', { class: 'event-week-num' }, '第' + week.week + '周'),
+        h('span', { class: 'event-week-date' }, week.date)
+      )
+    ));
+    frag.appendChild(card);
+  });
+
+  frag.appendChild(h('div', { class: 'spacer' }));
+  return frag;
+}
+
 /* ==================== 路由 ==================== */
 function switchTab(tab) {
   currentTab = tab;
@@ -575,17 +695,13 @@ function render() {
     pc.appendChild(renderTeams(searchKeyword));
   } else if (currentTab === 'ranking') {
     pc.appendChild(renderRanking(rankTab));
+  } else if (currentTab === 'events') {
+    pc.appendChild(renderEvents());
   }
 }
 
 /* ==================== 初始化 ==================== */
-/* v20260322b */
-try {
-  render();
-} catch(e) {
-  document.getElementById('page-content').innerHTML = '<div style="color:#fff;padding:20px;font-size:14px;">加载错误: ' + e.message + '</div>';
-}
+render();
 </script>
 </body>
 </html>
-

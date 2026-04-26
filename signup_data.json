@@ -47,7 +47,15 @@
       "captain": true,
       "team": "T2",
       "time": 1777196170143
+    },
+    {
+      "name": "龙龙",
+      "score": "16W+",
+      "weapon": "锤子",
+      "captain": false,
+      "team": "T1",
+      "time": 1777197554493
     }
   ],
-  "lastUpdated": "2026-04-26T09:36:10.989Z"
+  "lastUpdated": "2026-04-26T09:59:15.181Z"
 }

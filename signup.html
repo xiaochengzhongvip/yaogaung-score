@@ -548,9 +548,9 @@ async function submitSignup() {
 
     toast('报名成功！已加入 ' + getTeamName(team) + (isCap ? '\n(队长身份)' : ''), 'success');
 
-    // 提交成功后切换到队伍总览并刷新最新数据
+    // 提交成功后切换到队伍总览，直接用刚写入的数据渲染
     switchTab('squads');
-    loadData(true);
+    renderSquads();
   } catch(e) {
     toast('提交失败：' + e.message, 'error');
   } finally {

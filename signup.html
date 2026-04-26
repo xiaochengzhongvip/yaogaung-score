@@ -288,8 +288,8 @@ async function getSHAFromGithub() {
   }
 }
 
-async function githubPut(members) {
-  // 先获取最新 SHA（无 Authorization，无 CORS 问题）
+async function githubPut(members, retries) {
+  if (retries === undefined) retries = 3;
   var freshSHA = await getSHAFromGithub();
   if (freshSHA) _fileSHA = freshSHA;
 
@@ -314,10 +314,11 @@ async function githubPut(members) {
     }
   );
   if (!r.ok) {
-    // 如果 SHA 过期，用最新 SHA 重试
-    if (r.status === 409 && freshSHA) {
-      body.sha = freshSHA;
-      _fileSHA = freshSHA;
+    if (r.status === 409 && retries > 0) {
+      // SHA 过期，重试一次
+      var newSHA = await getSHAFromGithub();
+      _fileSHA = newSHA;
+      body.sha = newSHA;
       var r2 = await fetch(
         'https://api.github.com/repos/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/contents/' + GITHUB_FILE,
         {
@@ -330,16 +331,14 @@ async function githubPut(members) {
           body: JSON.stringify(body)
         }
       );
-      if (!r2.ok) {
-        var err = await r2.json();
-        throw new Error(err.message || '写入失败');
+      if (r2.ok) {
+        var j2 = await r2.json();
+        _fileSHA = j2.content.sha;
+        return true;
       }
-      var j2 = await r2.json();
-      _fileSHA = j2.content.sha;
-      return true;
     }
     var txt = await r.text();
-    throw new Error('写入失败 ' + r.status + ': ' + txt.substring(0, 100));
+    throw new Error('写入失败 ' + r.status);
   }
   var j = await r.json();
   _fileSHA = j.content.sha;

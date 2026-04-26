@@ -443,7 +443,7 @@ html, body {
     <div class="header-title">☁️ 云海团战报名</div>
     <div class="header-sub">每周六团战 · 4人小队制</div>
     <div class="header-leaders">👑 团长：七月失约 / 枕书待天明 &nbsp;&nbsp; 🛡️ 副团长：凌霄·奈何</div>
-    <div class="header-week" id="week-label">第8周 · 2026-04-26</div>
+    <div class="header-week" id="week-label">--</div>
   </div>
   <div class="tabs">
     <div class="tab-btn active" data-tab="squads" onclick="switchTab('squads')">⚔️ 队伍总览</div>
@@ -556,7 +556,15 @@ html, body {
 const CAPTAIN_PASSWORD = 'yunhai2026';
 const ADMIN_PASSWORD   = 'admin2026';
 const MAX_PER_TEAM = 4;
-const WEEK_LABEL = '第8周 · 2026-04-26';
+// 动态日期标签（格式：YYYY-MM-DD，每天自动更新）
+function getDateLabel() {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, '0');
+  const d = String(now.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+const WEEK_LABEL = getDateLabel();
 
 // GitHub 存储配置（通过 GitHub Contents API 读写 signup_data.json）
 const GITHUB_OWNER = 'xiaochengzhongvip';

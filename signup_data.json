@@ -7,7 +7,15 @@
       "captain": true,
       "team": "T1",
       "time": 1777181919922
+    },
+    {
+      "name": "温婉",
+      "score": "14W+",
+      "weapon": "匕首",
+      "captain": false,
+      "team": "T2",
+      "time": 1777182941312
     }
   ],
-  "lastUpdated": "2026-04-26T05:38:52.709Z"
+  "lastUpdated": "2026-04-26T05:55:41.313Z"
 }

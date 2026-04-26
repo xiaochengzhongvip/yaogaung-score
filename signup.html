@@ -351,13 +351,30 @@ async function loadData(showLoading) {
     document.getElementById('squads-list').innerHTML = '<div class="loading-wrap"><div class="loading-spin"></div><div>正在同步最新数据...</div></div>';
   }
 
-  // 直接使用嵌入数据，秒开无等待
-  _fileSHA = EMBEDDED_SHA; _localData = EMBEDDED_DATA || [];
+  // 先用嵌入数据秒开，再尝试从 GitHub 拉取最新数据
+  _fileSHA = EMBEDDED_SHA; _localData = (EMBEDDED_DATA || []).slice();
+  renderSquads(); // 先显示嵌入数据
+
+  try {
+    // 从 GitHub 获取最新数据
+    var r = await fetch(
+      'https://raw.githubusercontent.com/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/main/' + GITHUB_FILE + '?t=' + Date.now()
+    );
+    if (r.ok) {
+      var j = await r.json();
+      if (j.members) {
+        _localData = j.members;
+        _fileSHA = EMBEDDED_SHA; // SHA 保持不变，等下次写入时更新
+        renderSquads(); // 更新显示
+      }
+    }
+  } catch(e) {
+    // GitHub 获取失败，继续用嵌入数据
+  }
 
   var now = new Date();
   document.getElementById('update-time').textContent =
     '最后同步：' + now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0');
-  renderSquads();
 }
 
 // ===== 队伍总览渲染 =====

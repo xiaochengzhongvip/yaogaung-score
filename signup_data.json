@@ -1,21 +1,13 @@
 {
   "members": [
     {
-      "name": "雪男",
-      "score": "8W+",
-      "weapon": "锤子",
+      "name": "1",
+      "score": "12W+",
+      "weapon": "冬至",
       "captain": false,
-      "team": "T4",
-      "time": 1777193515083
-    },
-    {
-      "name": "KK",
-      "score": "9W+",
-      "weapon": "天命",
-      "captain": true,
       "team": "T6",
-      "time": 1777193726592
+      "time": 1777193772025
     }
   ],
-  "lastUpdated": "2026-04-26T08:55:27.263Z"
+  "lastUpdated": "2026-04-26T08:56:12.788Z"
 }

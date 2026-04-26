@@ -671,6 +671,7 @@ async function adminRemove(name, team) {
     toast('已移除 ' + name, 'success');
     renderAdminPanel();
     loadData(true);
+  } catch(e) { toast('移除失败：' + e.message, 'error'); }
 }
 
 function adminLogout() {

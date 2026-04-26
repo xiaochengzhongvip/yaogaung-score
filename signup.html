@@ -583,17 +583,16 @@ let _fileSHA   = null;
 // ============================================================
 async function githubGet() {
   try {
-    // 先尝试用 token 获取 SHA（用于写入）
-    const meta = await fetch(
-      `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE}`,
-      { headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Accept': 'application/vnd.github.v3+json' } }
+    // public repo 不需要 token 获取 SHA（无 CORS 问题）
+    const info = await fetch(
+      `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE}`
     ).then(r => r.json());
-    _fileSHA = meta.sha;
+    _fileSHA = info.sha;
 
-    // 直接用 raw URL 获取内容（无需 token，无 CORS 问题）
-    const rawUrl = meta.download_url;
+    // 直接用 raw URL 获取内容（无 CORS）
+    const rawUrl = info.download_url;
     const content = await fetch(rawUrl).then(r => r.json());
-    return { members: content.members || [], sha: meta.sha };
+    return { members: content.members || [], sha: info.sha };
   } catch(e) {
     console.error('读取失败', e);
     return { members: [], sha: null };

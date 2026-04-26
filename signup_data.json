@@ -7,7 +7,15 @@
       "captain": false,
       "team": "T1",
       "time": 1777198069031
+    },
+    {
+      "name": "KK",
+      "score": "9W+",
+      "weapon": "天命",
+      "captain": true,
+      "team": "T2",
+      "time": 1777199679453
     }
   ],
-  "lastUpdated": "2026-04-26T10:08:32.825Z"
+  "lastUpdated": "2026-04-26T10:34:40.155Z"
 }

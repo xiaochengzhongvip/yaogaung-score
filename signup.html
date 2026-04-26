@@ -7,434 +7,119 @@
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --bg: #0a0e1a;
-  --bg2: #111827;
-  --card: #1a2235;
-  --card2: #1e2a40;
-  --gold: #d4a843;
-  --gold2: #f0c96a;
-  --text: #e2e8f0;
-  --text2: #94a3b8;
-  --border: rgba(212,168,67,0.2);
-  --radius: 12px;
-  --green: #22c55e;
-  --red: #ef4444;
-  --blue: #38bdf8;
+  --bg: #0a0e1a; --bg2: #111827; --card: #1a2235; --card2: #1e2a40;
+  --gold: #d4a843; --gold2: #f0c96a; --text: #e2e8f0; --text2: #94a3b8;
+  --border: rgba(212,168,67,0.2); --radius: 12px;
+  --green: #22c55e; --red: #ef4444; --blue: #38bdf8;
 }
-html, body {
-  min-height: 100%;
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
-  font-size: 14px;
-}
-#app {
-  max-width: 480px;
-  margin: 0 auto;
-  min-height: 100vh;
-  background: var(--bg);
-  position: relative;
-}
+html, body { min-height: 100%; background: var(--bg); color: var(--text);
+  font-family: 'PingFang SC','Noto Sans SC','Microsoft YaHei',sans-serif; font-size: 14px; }
+#app { max-width: 480px; margin: 0 auto; min-height: 100vh; background: var(--bg); position: relative; }
 
-/* ===== 顶部 ===== */
-.header {
-  background: linear-gradient(180deg, #0d1526 0%, var(--bg) 100%);
-  padding: 24px 16px 16px;
-  text-align: center;
-  border-bottom: 1px solid var(--border);
-  position: relative;
-}
-.header::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--gold), transparent);
-}
-.header-title {
-  font-size: 20px;
-  font-weight: 800;
-  color: var(--gold2);
-  letter-spacing: 2px;
-  margin-bottom: 4px;
-}
-.header-sub {
-  font-size: 12px;
-  color: var(--text2);
-  letter-spacing: 1px;
-}
-.header-week {
-  display: inline-block;
-  margin-top: 8px;
-  background: rgba(212,168,67,0.12);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 3px 12px;
-  font-size: 12px;
-  color: var(--gold);
-}
-.header-leaders {
-  margin-top: 6px;
-  font-size: 11px;
-  color: var(--text2);
-}
+/* 顶部 */
+.header { background: linear-gradient(180deg,#0d1526 0%,var(--bg) 100%); padding: 24px 16px 16px; text-align: center; border-bottom: 1px solid var(--border); position: relative; }
+.header::before { content:''; position:absolute; top:0;left:0;right:0; height:2px; background: linear-gradient(90deg,transparent,var(--gold),transparent); }
+.header-title { font-size:20px; font-weight:800; color:var(--gold2); letter-spacing:2px; margin-bottom:4px; }
+.header-sub { font-size:12px; color:var(--text2); letter-spacing:1px; }
+.header-week { display:inline-block; margin-top:8px; background:rgba(212,168,67,0.12); border:1px solid var(--border); border-radius:20px; padding:3px 12px; font-size:12px; color:var(--gold); }
+.header-leaders { margin-top:6px; font-size:11px; color:var(--text2); }
 
-/* ===== Tab ===== */
-.tabs {
-  display: flex;
-  background: var(--bg2);
-  border-bottom: 1px solid var(--border);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-.tab-btn {
-  flex: 1;
-  padding: 12px 0;
-  text-align: center;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text2);
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  transition: all 0.2s;
-}
-.tab-btn.active {
-  color: var(--gold);
-  border-bottom-color: var(--gold);
-}
+/* Tab */
+.tabs { display:flex; background:var(--bg2); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100; }
+.tab-btn { flex:1; padding:12px 0; text-align:center; font-size:13px; font-weight:600; color:var(--text2); cursor:pointer; border-bottom:2px solid transparent; transition:all 0.2s; }
+.tab-btn.active { color:var(--gold); border-bottom-color:var(--gold); }
 
-/* ===== 页面内容 ===== */
-.page { display: none; padding: 16px; }
-.page.active { display: block; }
+/* 页面 */
+.page { display:none; padding:16px; }
+.page.active { display:block; }
 
-/* ===== 表单 ===== */
-.form-card {
-  background: var(--card);
-  border-radius: var(--radius);
-  padding: 20px;
-  border: 1px solid var(--border);
-  margin-bottom: 12px;
-}
-.form-title {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--gold);
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.form-group { margin-bottom: 14px; }
-.form-label {
-  font-size: 12px;
-  color: var(--text2);
-  margin-bottom: 6px;
-  display: block;
-}
-.form-label span { color: var(--red); margin-left: 2px; }
-.form-input, .form-select {
-  width: 100%;
-  background: var(--bg2);
-  border: 1px solid rgba(148,163,184,0.2);
-  border-radius: 8px;
-  padding: 10px 12px;
-  color: var(--text);
-  font-size: 14px;
-  font-family: inherit;
-  outline: none;
-  transition: border-color 0.2s;
-  appearance: none;
-  -webkit-appearance: none;
-}
-.form-input:focus, .form-select:focus { border-color: var(--gold); }
-.form-select-wrap { position: relative; }
-.form-select-wrap::after {
-  content: '▾';
-  position: absolute;
-  right: 12px; top: 50%;
-  transform: translateY(-50%);
-  color: var(--text2);
-  pointer-events: none;
-  font-size: 12px;
-}
+/* 表单 */
+.form-card { background:var(--card); border-radius:var(--radius); padding:20px; border:1px solid var(--border); margin-bottom:12px; }
+.form-title { font-size:15px; font-weight:700; color:var(--gold); margin-bottom:16px; display:flex; align-items:center; gap:6px; }
+.form-group { margin-bottom:14px; }
+.form-label { font-size:12px; color:var(--text2); margin-bottom:6px; display:block; }
+.form-label span { color:var(--red); margin-left:2px; }
+.form-input,.form-select { width:100%; background:var(--bg2); border:1px solid rgba(148,163,184,0.2); border-radius:8px; padding:10px 12px; color:var(--text); font-size:14px; font-family:inherit; outline:none; transition:border-color 0.2s; appearance:none; -webkit-appearance:none; }
+.form-input:focus,.form-select:focus { border-color:var(--gold); }
+.form-select-wrap { position:relative; }
+.form-select-wrap::after { content:'▾'; position:absolute; right:12px;top:50%; transform:translateY(-50%); color:var(--text2); pointer-events:none; font-size:12px; }
 
 /* 队长区 */
-.captain-section {
-  background: rgba(212,168,67,0.06);
-  border: 1px dashed rgba(212,168,67,0.3);
-  border-radius: 8px;
-  padding: 12px;
-  margin-top: 14px;
-}
-.captain-toggle {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  user-select: none;
-  font-size: 13px;
-  color: var(--gold);
-}
-.captain-toggle input[type=checkbox] {
-  accent-color: var(--gold);
-  width: 16px; height: 16px;
-}
-.captain-pwd-wrap { display: none; margin-top: 10px; }
-.captain-pwd-wrap.show { display: block; }
+.captain-section { background:rgba(212,168,67,0.06); border:1px dashed rgba(212,168,67,0.3); border-radius:8px; padding:12px; margin-top:14px; }
+.captain-toggle { display:flex; align-items:center; gap:8px; cursor:pointer; user-select:none; font-size:13px; color:var(--gold); }
+.captain-toggle input[type=checkbox] { accent-color:var(--gold); width:16px;height:16px; }
+.captain-pwd-wrap { display:none; margin-top:10px; }
+.captain-pwd-wrap.show { display:block; }
 
 /* 按钮 */
-.btn-submit {
-  width: 100%;
-  padding: 14px;
-  background: linear-gradient(135deg, #c8971e 0%, #e8b84b 100%);
-  color: #0a0e1a;
-  font-size: 15px;
-  font-weight: 800;
-  border: none;
-  border-radius: var(--radius);
-  cursor: pointer;
-  letter-spacing: 1px;
-  transition: opacity 0.2s;
-  margin-top: 4px;
-}
-.btn-submit:active { opacity: 0.8; }
-.btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
-.btn-outline {
-  padding: 8px 16px;
-  background: transparent;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--text2);
-  font-size: 12px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.btn-outline:hover { border-color: var(--gold); color: var(--gold); }
-.btn-danger {
-  padding: 6px 12px;
-  background: rgba(239,68,68,0.1);
-  border: 1px solid rgba(239,68,68,0.3);
-  border-radius: 6px;
-  color: var(--red);
-  font-size: 12px;
-  cursor: pointer;
-}
+.btn-submit { width:100%; padding:14px; background:linear-gradient(135deg,#c8971e 0%,#e8b84b 100%); color:#0a0e1a; font-size:15px; font-weight:800; border:none; border-radius:var(--radius); cursor:pointer; letter-spacing:1px; transition:opacity 0.2s; margin-top:4px; }
+.btn-submit:active { opacity:0.8; }
+.btn-submit:disabled { opacity:0.5; cursor:not-allowed; }
+.btn-outline { padding:8px 16px; background:transparent; border:1px solid var(--border); border-radius:8px; color:var(--text2); font-size:12px; cursor:pointer; transition:all 0.2s; }
+.btn-outline:hover { border-color:var(--gold); color:var(--gold); }
+.btn-danger { padding:6px 12px; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); border-radius:6px; color:var(--red); font-size:12px; cursor:pointer; }
 
-/* ===== 队伍列表 ===== */
-.team-card {
-  background: var(--card);
-  border-radius: var(--radius);
-  margin-bottom: 12px;
-  border: 1px solid var(--border);
-  overflow: hidden;
-}
-.team-card-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 14px;
-  border-bottom: 1px solid var(--border);
-  background: rgba(212,168,67,0.04);
-}
-.team-icon {
-  font-size: 20px;
-  width: 36px; height: 36px;
-  background: rgba(212,168,67,0.1);
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.team-name { font-size: 15px; font-weight: 700; }
-.team-count { margin-left: auto; font-size: 12px; color: var(--text2); }
-.team-count.full { color: var(--green); }
-.team-slots { padding: 8px 14px; }
-.slot-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-}
-.slot-row:last-child { border-bottom: none; }
-.slot-num {
-  width: 20px; height: 20px;
-  background: var(--bg2);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  color: var(--text2);
-  flex-shrink: 0;
-}
-.slot-empty {
-  flex: 1;
-  font-size: 13px;
-  color: rgba(148,163,184,0.4);
-  font-style: italic;
-}
-.slot-name { flex: 1; font-size: 14px; font-weight: 600; }
-.slot-tags {
-  display: flex; gap: 4px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-.tag { padding: 2px 7px; border-radius: 20px; font-size: 11px; font-weight: 600; }
-.tag-captain { background: rgba(212,168,67,0.15); color: var(--gold); border: 1px solid rgba(212,168,67,0.3); }
-.tag-weapon { background: rgba(56,189,248,0.1); color: var(--blue); border: 1px solid rgba(56,189,248,0.2); }
-.tag-score { background: rgba(34,197,94,0.1); color: var(--green); border: 1px solid rgba(34,197,94,0.2); }
+/* 队伍列表 */
+.team-card { background:var(--card); border-radius:var(--radius); margin-bottom:12px; border:1px solid var(--border); overflow:hidden; }
+.team-card-header { display:flex; align-items:center; gap:10px; padding:12px 14px; border-bottom:1px solid var(--border); background:rgba(212,168,67,0.04); }
+.team-icon { font-size:20px; width:36px;height:36px; background:rgba(212,168,67,0.1); border-radius:8px; display:flex; align-items:center; justify-content:center; }
+.team-name { font-size:15px; font-weight:700; }
+.team-count { margin-left:auto; font-size:12px; color:var(--text2); }
+.team-count.full { color:var(--green); }
+.team-slots { padding:8px 14px; }
+.slot-row { display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05); }
+.slot-row:last-child { border-bottom:none; }
+.slot-num { width:20px;height:20px; background:var(--bg2); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; color:var(--text2); flex-shrink:0; }
+.slot-empty { flex:1; font-size:13px; color:rgba(148,163,184,0.4); font-style:italic; }
+.slot-name { flex:1; font-size:14px; font-weight:600; }
+.slot-tags { display:flex;gap:4px; align-items:center; flex-wrap:wrap; }
+.tag { padding:2px 7px; border-radius:20px; font-size:11px; font-weight:600; }
+.tag-captain { background:rgba(212,168,67,0.15); color:var(--gold); border:1px solid rgba(212,168,67,0.3); }
+.tag-weapon { background:rgba(56,189,248,0.1); color:var(--blue); border:1px solid rgba(56,189,248,0.2); }
+.tag-score { background:rgba(34,197,94,0.1); color:var(--green); border:1px solid rgba(34,197,94,0.2); }
 
-/* ===== 队长管理 ===== */
-.manage-panel {
-  background: var(--card2);
-  border-radius: var(--radius);
-  padding: 16px;
-  border: 1px solid rgba(212,168,67,0.3);
-  margin-bottom: 16px;
-}
-.manage-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--gold);
-  margin-bottom: 12px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.manage-member-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-}
-.manage-member-row:last-child { border-bottom: none; }
-.manage-member-name { flex: 1; font-size: 13px; }
-.edit-fields { display: none; flex-direction: column; gap: 8px; padding: 10px 0; }
-.edit-fields.show { display: flex; }
-.edit-row { display: flex; gap: 8px; }
-.edit-input, .edit-select {
-  flex: 1;
-  background: var(--bg);
-  border: 1px solid rgba(148,163,184,0.2);
-  border-radius: 6px;
-  padding: 7px 10px;
-  color: var(--text);
-  font-size: 13px;
-  font-family: inherit;
-  outline: none;
-  appearance: none;
-  -webkit-appearance: none;
-}
-.edit-select-wrap { flex: 1; position: relative; }
-.edit-select-wrap::after {
-  content: '▾';
-  position: absolute;
-  right: 8px; top: 50%;
-  transform: translateY(-50%);
-  color: var(--text2);
-  pointer-events: none;
-  font-size: 11px;
-}
-.btn-save {
-  padding: 6px 14px;
-  background: rgba(34,197,94,0.1);
-  border: 1px solid rgba(34,197,94,0.3);
-  border-radius: 6px;
-  color: var(--green);
-  font-size: 12px;
-  cursor: pointer;
-}
+/* 队长管理 */
+.manage-panel { background:var(--card2); border-radius:var(--radius); padding:16px; border:1px solid rgba(212,168,67,0.3); margin-bottom:16px; }
+.manage-title { font-size:14px; font-weight:700; color:var(--gold); margin-bottom:12px; display:flex; align-items:center; gap:6px; }
+.manage-member-row { display:flex; align-items:center; gap:8px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.05); }
+.manage-member-row:last-child { border-bottom:none; }
+.manage-member-name { flex:1; font-size:13px; }
+.edit-fields { display:none; flex-direction:column; gap:8px; padding:10px 0; }
+.edit-fields.show { display:flex; }
+.edit-row { display:flex; gap:8px; }
+.edit-input,.edit-select { flex:1; background:var(--bg); border:1px solid rgba(148,163,184,0.2); border-radius:6px; padding:7px 10px; color:var(--text); font-size:13px; font-family:inherit; outline:none; appearance:none; -webkit-appearance:none; }
+.edit-select-wrap { flex:1; position:relative; }
+.edit-select-wrap::after { content:'▾'; position:absolute; right:8px;top:50%; transform:translateY(-50%); color:var(--text2); pointer-events:none; font-size:11px; }
+.btn-save { padding:6px 14px; background:rgba(34,197,94,0.1); border:1px solid rgba(34,197,94,0.3); border-radius:6px; color:var(--green); font-size:12px; cursor:pointer; }
 
-/* ===== Toast ===== */
-.toast {
-  position: fixed;
-  top: 60px; left: 50%;
-  transform: translateX(-50%) translateY(-10px);
-  background: var(--card2);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 10px 20px;
-  font-size: 13px;
-  z-index: 9999;
-  opacity: 0;
-  transition: all 0.3s;
-  pointer-events: none;
-  max-width: 300px;
-  text-align: center;
-  white-space: pre-line;
-}
-.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-.toast.success { border-color: rgba(34,197,94,0.4); color: var(--green); }
-.toast.error { border-color: rgba(239,68,68,0.4); color: var(--red); }
+/* Toast */
+.toast { position:fixed; top:60px;left:50%; transform:translateX(-50%) translateY(-10px); background:var(--card2); border:1px solid var(--border); border-radius:8px; padding:10px 20px; font-size:13px; z-index:9999; opacity:0; transition:all 0.3s; pointer-events:none; max-width:300px; text-align:center; white-space:pre-line; }
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+.toast.success { border-color:rgba(34,197,94,0.4); color:var(--green); }
+.toast.error { border-color:rgba(239,68,68,0.4); color:var(--red); }
 
-/* ===== 队长登录 ===== */
-.captain-login-card {
-  background: var(--card);
-  border-radius: var(--radius);
-  padding: 20px;
-  border: 1px solid rgba(212,168,67,0.3);
-  margin-bottom: 16px;
-}
-.captain-login-title { font-size: 14px; font-weight: 700; color: var(--gold); margin-bottom: 12px; }
-.captain-login-row { display: flex; gap: 8px; align-items: center; }
+/* 登录 */
+.captain-login-card { background:var(--card); border-radius:var(--radius); padding:20px; border:1px solid rgba(212,168,67,0.3); margin-bottom:16px; }
+.captain-login-title { font-size:14px; font-weight:700; color:var(--gold); margin-bottom:12px; }
+.captain-login-row { display:flex; gap:8px; align-items:center; }
 
-/* ===== 统计栏 ===== */
-.stats-bar { display: flex; gap: 8px; margin-bottom: 16px; }
-.stat-item {
-  flex: 1;
-  background: var(--card);
-  border-radius: 10px;
-  padding: 10px;
-  text-align: center;
-  border: 1px solid var(--border);
-}
-.stat-num { font-size: 20px; font-weight: 800; color: var(--gold2); }
-.stat-label { font-size: 11px; color: var(--text2); margin-top: 2px; }
+/* 统计 */
+.stats-bar { display:flex; gap:8px; margin-bottom:16px; }
+.stat-item { flex:1; background:var(--card); border-radius:10px; padding:10px; text-align:center; border:1px solid var(--border); }
+.stat-num { font-size:20px; font-weight:800; color:var(--gold2); }
+.stat-label { font-size:11px; color:var(--text2); margin-top:2px; }
 
-/* ===== Loading ===== */
-.loading-wrap {
-  text-align: center;
-  padding: 40px 0;
-  color: var(--text2);
-}
-.loading-spin {
-  display: inline-block;
-  width: 28px; height: 28px;
-  border: 2px solid rgba(212,168,67,0.2);
-  border-top-color: var(--gold);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  margin-bottom: 10px;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
+/* Loading */
+.loading-wrap { text-align:center; padding:40px 0; color:var(--text2); }
+.loading-spin { display:inline-block; width:28px;height:28px; border:2px solid rgba(212,168,67,0.2); border-top-color:var(--gold); border-radius:50%; animation:spin 0.8s linear infinite; margin-bottom:10px; }
+@keyframes spin { to { transform:rotate(360deg); } }
 
-/* ===== 刷新按钮 ===== */
-.refresh-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: var(--text2);
-  cursor: pointer;
-  padding: 4px 10px;
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 6px;
-  background: transparent;
-  transition: color 0.2s;
-}
-.refresh-btn:hover { color: var(--gold); }
-.update-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
-}
-.update-time { font-size: 11px; color: var(--text2); }
-
-.spacer { height: 24px; }
+/* 刷新 */
+.refresh-btn { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text2); cursor:pointer; padding:4px 10px; border:1px solid rgba(255,255,255,0.08); border-radius:6px; background:transparent; transition:color 0.2s; }
+.refresh-btn:hover { color:var(--gold); }
+.update-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+.update-time { font-size:11px; color:var(--text2); }
+.spacer { height:24px; }
 </style>
 </head>
 <body>
@@ -454,16 +139,11 @@ html, body {
   <!-- 队伍总览 -->
   <div class="page active" id="page-squads">
     <div class="update-row">
-      <div class="update-time" id="update-time">数据加载中...</div>
+      <div class="update-time" id="update-time">最后同步：--</div>
       <button class="refresh-btn" onclick="loadData(true)">↻ 刷新</button>
     </div>
     <div class="stats-bar" id="stats-bar"></div>
-    <div id="squads-list">
-      <div class="loading-wrap">
-        <div class="loading-spin"></div>
-        <div>正在加载队伍数据...</div>
-      </div>
-    </div>
+    <div id="squads-list"></div>
     <div class="spacer"></div>
   </div>
 
@@ -540,7 +220,7 @@ html, body {
         <button class="btn-outline" onclick="captainLogin()">验证</button>
       </div>
       <div style="font-size:11px;color:var(--text2);margin-top:6px;text-align:center">
-        队长：输入角色名 + 队长密码 · 管理员：输入「管理员」+ 管理密码
+        队长：角色名 + 队长密码 &nbsp;|&nbsp; 管理员：填「管理员」+ 管理密码
       </div>
     </div>
     <div id="manage-content"></div>
@@ -550,72 +230,66 @@ html, body {
 <div class="toast" id="toast"></div>
 
 <script>
-// ============================================================
-// 配置
-// ============================================================
-const CAPTAIN_PASSWORD = 'yunhai2026';
-const ADMIN_PASSWORD   = 'admin2026';
-const MAX_PER_TEAM = 4;
-// 动态日期标签（格式：YYYY-MM-DD，每天自动更新）
-function getDateLabel() {
-  const now = new Date();
-  const y = now.getFullYear();
-  const m = String(now.getMonth() + 1).padStart(2, '0');
-  const d = String(now.getDate()).padStart(2, '0');
-  return `${y}-${m}-${d}`;
-}
-const WEEK_LABEL = getDateLabel();
+// ===== 配置 =====
+var CAPTAIN_PASSWORD = 'yunhai2026';
+var ADMIN_PASSWORD   = 'admin2026';
+var MAX_PER_TEAM = 4;
 
-// GitHub 存储配置（通过 GitHub Contents API 读写 signup_data.json）
-const GITHUB_OWNER = 'xiaochengzhongvip';
-const GITHUB_REPO  = 'yaogaung-score';
-const GITHUB_FILE  = 'signup_data.json';
-const EMBEDDED_DATA = [{"name":"KK","score":"15W+","weapon":"一闪雷击弓","captain":true,"team":"T1","time":1777181919922},{"name":"温婉","score":"14W+","weapon":"匕首","captain":false,"team":"T2","time":1777182941312}];
-const EMBEDDED_DATA = [{"name":"KK","score":"15W+","weapon":"一闪雷击弓","captain":true,"team":"T1","time":1777181919922},{"name":"温婉","score":"14W+","weapon":"匕首","captain":false,"team":"T2","time":1777182941312}];
-const GITHUB_TOKEN = atob(atob('WjJod1gxY3pZVmhWWVhGbmMzSTVaRWxWTkhSQllteFdaVXRhT1ZocmNVeHVTakpXZEdsbFp3PT0='));
+// 动态日期
+(function() {
+  var now = new Date();
+  var y = now.getFullYear();
+  var m = String(now.getMonth() + 1).padStart(2, '0');
+  var d = String(now.getDate()).padStart(2, '0');
+  document.getElementById('week-label').textContent = y + '-' + m + '-' + d;
+})();
 
-// ============================================================
-// 本地缓存
-// ============================================================
-let _localData = null;   // { members: [...], sha: '...' }
-let _fileSHA   = null;
+// GitHub 存储配置
+var GITHUB_OWNER = 'xiaochengzhongvip';
+var GITHUB_REPO  = 'yaogaung-score';
+var GITHUB_FILE  = 'signup_data.json';
+var GITHUB_TOKEN = atob(atob('WjJod1gxY3pZVmhWWVhGbmMzSTVaRWxWTkhSQllteFdaVXRhT1ZocmNVeHVTakpXZEdsbFp3PT0='));
 
-// ============================================================
-// GitHub API
-// ============================================================
-async function githubGet() {
-      // 优先使用嵌入数据（纯静态，无网络请求）
-      if (EMBEDDED_DATA && EMBEDDED_DATA.length > 0) {
-        return { members: EMBEDDED_DATA, sha: _fileSHA };
-      }
-      // fallback: 尝试从 GitHub 加载
-      try {
-        const rawUrl = `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/${GITHUB_FILE}?t=${Date.now()}`;
-        const content = await fetch(rawUrl).then(r => r.json());
-        return { members: content.members || [], sha: null };
-      } catch(e) {
-        return { members: [], sha: null };
-      }
-    }
+// ===== 嵌入数据（纯静态，无网络请求）====
+// 此数据在构建时嵌入，每次更新需重新生成此文件
+var EMBEDDED_DATA = [{"name":"KK","score":"15W+","weapon":"一闪雷击弓","captain":true,"team":"T1","time":1777181919922},{"name":"温婉","score":"14W+","weapon":"匕首","captain":false,"team":"T2","time":1777182941312}];
+
+// ===== 本地缓存 =====
+var _localData = null;
+var _fileSHA   = null;
+
+// ===== 工具函数 =====
+var CN   = ['一','二','三','四','五','六','七','八','九','十','十一','十二','十三','十四','十五'];
+var ICONS = ['🐰','🔥','⚡','🌟','💀','🌸','❄️','🎵','🔮','⚙️','🌊','🌙','🌈','⚔️','🦅'];
+
+function getTeamName(key) { var n = parseInt(key.replace('T','')); return '第'+(CN[n-1]||n)+'队'; }
+function getTeamIcon(key) { var n = parseInt(key.replace('T','')); return ICONS[(n-1)%ICONS.length]; }
+
+// ===== Toast =====
+function toast(msg, type) {
+  type = type || 'success';
+  var el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show ' + type;
+  setTimeout(function() { el.className = 'toast'; }, 2500);
 }
 
+// ===== GitHub API（用于写入，读取直接用嵌入数据）=====
 async function githubPut(members) {
-  const content = btoa(unescape(encodeURIComponent(
-    JSON.stringify({ members, lastUpdated: new Date().toISOString() }, null, 2)
-  )));
-  const body = {
+  var content = btoa(unescape(encodeURIComponent(JSON.stringify({ members: members, lastUpdated: new Date().toISOString() }, null, 2))));
+  var body = {
     message: 'update signup data',
-    content,
+    content: content,
     committer: { name: 'Yunhai Bot', email: 'bot@yunhai.com' }
   };
   if (_fileSHA) body.sha = _fileSHA;
 
-  const r = await fetch(
-    `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE}`,
+  var r = await fetch(
+    'https://api.github.com/repos/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/contents/' + GITHUB_FILE,
     {
       method: 'PUT',
       headers: {
-        'Authorization': `token ${GITHUB_TOKEN}`,
+        'Authorization': 'token ' + GITHUB_TOKEN,
         'Content-Type': 'application/json',
         'Accept': 'application/vnd.github.v3+json'
       },
@@ -623,151 +297,133 @@ async function githubPut(members) {
     }
   );
   if (!r.ok) {
-    const err = await r.json();
+    var err = await r.json();
     throw new Error(err.message || '写入失败');
   }
-  const j = await r.json();
+  var j = await r.json();
   _fileSHA = j.content.sha;
   return true;
 }
 
-// ============================================================
-// 加载数据
-// ============================================================
-async function loadData(showLoading = false) {
+// ===== 加载数据 =====
+async function loadData(showLoading) {
   if (showLoading) {
-    document.getElementById('squads-list').innerHTML = `
-      <div class="loading-wrap">
-        <div class="loading-spin"></div>
-        <div>正在同步最新数据...</div>
-      </div>`;
+    document.getElementById('squads-list').innerHTML = '<div class="loading-wrap"><div class="loading-spin"></div><div>正在同步最新数据...</div></div>';
   }
-  const result = await githubGet();
-  _localData = result.members;
-  const now = new Date();
+
+  // 直接使用嵌入数据，秒开无等待
+  _localData = EMBEDDED_DATA || [];
+
+  var now = new Date();
   document.getElementById('update-time').textContent =
-    `最后同步：${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
+    '最后同步：' + now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0');
   renderSquads();
 }
 
-// ============================================================
-// 初始化
-// ============================================================
-document.getElementById('week-label').textContent = WEEK_LABEL;
-loadData();
-
-// ============================================================
-// Tab 切换
-// ============================================================
-function switchTab(tab) {
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
-  document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === 'page-' + tab));
-  if (tab === 'squads') loadData();
-  if (tab === 'manage') { document.getElementById('manage-content').innerHTML = ''; currentCaptain = null; isAdminMode = false; }
-}
-
-// ============================================================
-// Toast
-// ============================================================
-function toast(msg, type = 'success') {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.className = 'toast show ' + type;
-  setTimeout(() => el.className = 'toast', 2500);
-}
-
-// ============================================================
-// 队名工具
-// ============================================================
-const CN   = ['一','二','三','四','五','六','七','八','九','十','十一','十二','十三','十四','十五','十六','十七','十八','十九','二十'];
-const ICONS = ['🐰','🔥','⚡','🌟','💀','🌸','❄️','🎵','🔮','⚙️','🌊','🌙','🌈','⚔️','🦅','🐉','🌺','🎯','🏹','🔱'];
-function getTeamName(key) { const n = parseInt(key.replace('T','')); return '第'+(CN[n-1]||n)+'队'; }
-function getTeamIcon(key) { const n = parseInt(key.replace('T','')); return ICONS[(n-1) % ICONS.length]; }
-
-// ============================================================
-// 队伍总览渲染
-// ============================================================
+// ===== 队伍总览渲染 =====
 function renderSquads() {
-  const data = _localData || [];
-  const teamMap = {};
-  data.forEach(d => {
+  var data = _localData || [];
+  var teamMap = {};
+  for (var i = 0; i < data.length; i++) {
+    var d = data[i];
     if (!teamMap[d.team]) teamMap[d.team] = [];
     teamMap[d.team].push(d);
-  });
-  const keys = Object.keys(teamMap).sort((a,b) => parseInt(a.replace('T','')) - parseInt(b.replace('T','')));
+  }
+  var keys = Object.keys(teamMap).sort(function(a,b){ return parseInt(a.replace('T','')) - parseInt(b.replace('T','')); });
 
-  // 统计
-  const total = data.length;
-  const teamCount = keys.length;
-  const fullTeams = keys.filter(k => teamMap[k].length >= MAX_PER_TEAM).length;
-  document.getElementById('stats-bar').innerHTML = `
-    <div class="stat-item"><div class="stat-num">${total}</div><div class="stat-label">报名人数</div></div>
-    <div class="stat-item"><div class="stat-num">${teamCount}</div><div class="stat-label">队伍数量</div></div>
-    <div class="stat-item"><div class="stat-num">${fullTeams}</div><div class="stat-label">满员队伍</div></div>
-  `;
+  // 统计栏
+  var total = data.length;
+  var teamCount = keys.length;
+  var fullTeams = 0;
+  for (var ki = 0; ki < keys.length; ki++) {
+    if (teamMap[keys[ki]].length >= MAX_PER_TEAM) fullTeams++;
+  }
+  document.getElementById('stats-bar').innerHTML =
+    '<div class="stat-item"><div class="stat-num">' + total + '</div><div class="stat-label">报名人数</div></div>' +
+    '<div class="stat-item"><div class="stat-num">' + teamCount + '</div><div class="stat-label">队伍数量</div></div>' +
+    '<div class="stat-item"><div class="stat-num">' + fullTeams + '</div><div class="stat-label">满员队伍</div></div>';
 
   if (keys.length === 0) {
-    document.getElementById('squads-list').innerHTML = `
-      <div style="text-align:center;padding:40px 0;color:var(--text2)">
-        <div style="font-size:32px;margin-bottom:8px">📋</div>
-        <div>暂无报名数据</div>
-        <div style="font-size:12px;margin-top:4px">快去报名参加本周团战吧！</div>
-      </div>`;
+    document.getElementById('squads-list').innerHTML =
+      '<div style="text-align:center;padding:40px 0;color:var(--text2)">' +
+      '<div style="font-size:32px;margin-bottom:8px">📋</div>' +
+      '<div>暂无报名数据</div>' +
+      '<div style="font-size:12px;margin-top:4px">快去报名参加本周团战吧！</div></div>';
     return;
   }
 
-  let html = '';
-  keys.forEach(key => {
-    const members = teamMap[key];
-    const count = members.length;
-    const icon = getTeamIcon(key);
-    const name = getTeamName(key);
-    html += `<div class="team-card">
-      <div class="team-card-header">
-        <div class="team-icon">${icon}</div>
-        <div class="team-name">${name}</div>
-        <div class="team-count ${count>=MAX_PER_TEAM?'full':''}">${count}/${MAX_PER_TEAM}${count>=MAX_PER_TEAM?' ✓ 满员':''}</div>
-      </div>
-      <div class="team-slots">`;
-    for (let i = 0; i < MAX_PER_TEAM; i++) {
-      const m = members[i];
-      html += `<div class="slot-row"><div class="slot-num">${i+1}</div>`;
-      if (m) {
-        html += `<div class="slot-name">${m.name}</div>
-          <div class="slot-tags">
-            ${m.captain ? '<span class="tag tag-captain">队长</span>' : ''}
-            <span class="tag tag-weapon">${m.weapon}</span>
-            <span class="tag tag-score">${m.score}</span>
-          </div>`;
-      } else {
-        html += `<div class="slot-empty">等待报名...</div>`;
-      }
-      html += `</div>`;
-    }
-    html += `</div></div>`;
-  });
+  var html = '';
+  for (var k = 0; k < keys.length; k++) {
+    var key = keys[k];
+    var members = teamMap[key];
+    var icon = getTeamIcon(key);
+    var name = getTeamName(key);
+    var count = members.length;
+    var isFull = count >= MAX_PER_TEAM;
 
+    html += '<div class="team-card">' +
+      '<div class="team-card-header">' +
+        '<div class="team-icon">' + icon + '</div>' +
+        '<div class="team-name">' + name + '</div>' +
+        '<div class="team-count' + (isFull ? ' full' : '') + '">' + count + '/' + MAX_PER_TEAM + (isFull ? ' ✓ 满员' : '') + '</div>' +
+      '</div>' +
+      '<div class="team-slots">';
+
+    for (var s = 0; s < MAX_PER_TEAM; s++) {
+      html += '<div class="slot-row"><div class="slot-num">' + (s+1) + '</div>';
+      if (members[s]) {
+        var m = members[s];
+        html += '<div class="slot-name">' + m.name + '</div>' +
+          '<div class="slot-tags">' +
+            (m.captain ? '<span class="tag tag-captain">队长</span>' : '') +
+            '<span class="tag tag-weapon">' + m.weapon + '</span>' +
+            '<span class="tag tag-score">' + m.score + '</span>' +
+          '</div>';
+      } else {
+        html += '<div class="slot-empty">等待报名...</div>';
+      }
+      html += '</div>';
+    }
+    html += '</div></div>';
+  }
   document.getElementById('squads-list').innerHTML = html;
 }
 
-// ============================================================
-// 队长密码 toggle
-// ============================================================
+// ===== Tab 切换 =====
+function switchTab(tab) {
+  var btns = document.querySelectorAll('.tab-btn');
+  for (var i = 0; i < btns.length; i++) {
+    btns[i].classList.toggle('active', btns[i].dataset.tab === tab);
+  }
+  var pages = document.querySelectorAll('.page');
+  for (var j = 0; j < pages.length; j++) {
+    pages[j].classList.toggle('active', pages[j].id === 'page-' + tab);
+  }
+  if (tab === 'squads') loadData(false);
+  if (tab === 'manage') {
+    document.getElementById('manage-content').innerHTML = '';
+    currentCaptain = null;
+    isAdminMode = false;
+  }
+}
+
+// ===== 队长密码 toggle =====
 function toggleCaptainPwd() {
-  const show = document.getElementById('chk-captain').checked;
+  var show = document.getElementById('chk-captain').checked;
   document.getElementById('captain-pwd-wrap').classList.toggle('show', show);
 }
 
-// ============================================================
-// 提交报名
-// ============================================================
+// ===== 提交报名 =====
+var currentCaptain = null;
+var isAdminMode = false;
+
 async function submitSignup() {
-  const team   = document.getElementById('inp-team').value;
-  const name   = document.getElementById('inp-name').value.trim();
-  const score  = document.getElementById('inp-score').value;
-  const weapon = document.getElementById('inp-weapon').value;
-  const isCap  = document.getElementById('chk-captain').checked;
-  const pwd    = document.getElementById('inp-captain-pwd').value;
+  var team   = document.getElementById('inp-team').value;
+  var name   = document.getElementById('inp-name').value.trim();
+  var score  = document.getElementById('inp-score').value;
+  var weapon = document.getElementById('inp-weapon').value;
+  var isCap  = document.getElementById('chk-captain').checked;
+  var pwd    = document.getElementById('inp-captain-pwd').value;
 
   if (!team)   { toast('请选择队伍', 'error'); return; }
   if (!name)   { toast('请填写角色名', 'error'); return; }
@@ -775,32 +431,28 @@ async function submitSignup() {
   if (!weapon) { toast('请选择武器', 'error'); return; }
   if (isCap && pwd !== CAPTAIN_PASSWORD) { toast('队长密码错误', 'error'); return; }
 
-  const btn = document.getElementById('btn-submit');
+  var btn = document.getElementById('btn-submit');
   btn.disabled = true;
   btn.textContent = '提交中...';
 
   try {
-    // 先拉最新数据防并发
-    const { members, sha } = await githubGet();
-    _fileSHA = sha;
-
-    if (members.find(d => d.name === name)) {
+    var members = (_localData || []).slice();
+    if (members.find(function(d){ return d.name === name; })) {
       toast('该角色名已报名\n如需修改请联系队长', 'error');
+      btn.disabled = false; btn.textContent = '✦ 提交报名 ✦';
       return;
     }
-
-    // 检查队伍是否已满
-    const teamCount = members.filter(d => d.team === team).length;
+    var teamCount = members.filter(function(d){ return d.team === team; }).length;
     if (teamCount >= MAX_PER_TEAM) {
       toast(getTeamName(team) + ' 已满员（4人）\n请选择其他队伍', 'error');
+      btn.disabled = false; btn.textContent = '✦ 提交报名 ✦';
       return;
     }
 
-    members.push({ name, score, weapon, captain: isCap, team: team, time: Date.now() });
+    members.push({ name: name, score: score, weapon: weapon, captain: isCap, team: team, time: Date.now() });
     await githubPut(members);
     _localData = members;
 
-    // 清空表单
     document.getElementById('inp-team').value = '';
     document.getElementById('inp-name').value = '';
     document.getElementById('inp-score').value = '';
@@ -809,8 +461,7 @@ async function submitSignup() {
     document.getElementById('captain-pwd-wrap').classList.remove('show');
     document.getElementById('inp-captain-pwd').value = '';
 
-    const teamName = getTeamName(team);
-    toast('报名成功！\n已加入 ' + teamName + (isCap ? '\n(队长身份)' : ''), 'success');
+    toast('报名成功！已加入 ' + getTeamName(team) + (isCap ? '\n(队长身份)' : ''), 'success');
     renderSquads();
   } catch(e) {
     toast('提交失败：' + e.message, 'error');
@@ -820,34 +471,30 @@ async function submitSignup() {
   }
 }
 
-// ============================================================
-// 队长/管理员管理
-// ============================================================
-let currentCaptain = null;  // 队长模式
-let isAdminMode    = false; // 管理员模式
-
+// ===== 队长/管理员登录 =====
 async function captainLogin() {
-  const name = document.getElementById('mgr-name').value.trim();
-  const pwd  = document.getElementById('mgr-pwd').value;
+  var nameEl = document.getElementById('mgr-name');
+  var pwdEl  = document.getElementById('mgr-pwd');
+  var name = nameEl.value.trim();
+  var pwd  = pwdEl.value;
 
-  // 管理员登录
   if (name === '管理员' && pwd === ADMIN_PASSWORD) {
     isAdminMode = true;
     currentCaptain = null;
-    const { members } = await githubGet();
-    _localData = members;
+    _localData = EMBEDDED_DATA || [];
     toast('管理员登录成功！', 'success');
     renderAdminPanel();
     return;
   }
 
-  // 队长登录
   if (!name) { toast('请输入角色名', 'error'); return; }
   if (pwd !== CAPTAIN_PASSWORD) { toast('密码错误', 'error'); return; }
 
-  const { members } = await githubGet();
-  _localData = members;
-  const self = members.find(d => d.name === name && d.captain);
+  var members = _localData || EMBEDDED_DATA || [];
+  var self = null;
+  for (var i = 0; i < members.length; i++) {
+    if (members[i].name === name && members[i].captain) { self = members[i]; break; }
+  }
   if (!self) { toast('未找到该队长记录\n请先以队长身份报名', 'error'); return; }
   isAdminMode = false;
   currentCaptain = self;
@@ -855,74 +502,76 @@ async function captainLogin() {
   renderManage();
 }
 
-// 管理员面板 — 可修改/删除所有队伍的所有成员
-async function renderAdminPanel() {
-  const data = _localData || [];
-  const teamMap = {};
-  data.forEach(d => {
+// ===== 管理员面板 =====
+function renderAdminPanel() {
+  var data = _localData || [];
+  var teamMap = {};
+  for (var i = 0; i < data.length; i++) {
+    var d = data[i];
     if (!teamMap[d.team]) teamMap[d.team] = [];
     teamMap[d.team].push(d);
-  });
-  const keys = Object.keys(teamMap).sort((a,b) => parseInt(a.replace('T','')) - parseInt(b.replace('T','')));
+  }
+  var keys = Object.keys(teamMap).sort(function(a,b){ return parseInt(a.replace('T','')) - parseInt(b.replace('T','')); });
 
-  let html = `<div class="manage-panel">
-    <div class="manage-title" style="color:var(--red)">🛡️ 管理员面板 · 全员管理</div>
-    <div style="margin-bottom:12px">
-      <button class="btn-outline" onclick="adminLogout()" style="font-size:12px">退出管理员</button>
-    </div>`;
+  var html = '<div class="manage-panel">' +
+    '<div class="manage-title" style="color:var(--red)">🛡️ 管理员面板 · 全员管理</div>' +
+    '<div style="margin-bottom:12px"><button class="btn-outline" onclick="adminLogout()" style="font-size:12px">退出管理员</button></div>';
 
-  keys.forEach(key => {
-    const members = teamMap[key];
-    const icon = getTeamIcon(key);
-    const name = getTeamName(key);
-    html += `<div style="margin-bottom:16px">
-      <div style="font-weight:600;color:var(--text1);margin-bottom:6px;display:flex;align-items:center;gap:6px">
-        ${icon} ${name}
-        <span style="font-size:11px;color:var(--text2)">（${members.length}人）</span>
-      </div>`;
-    members.forEach(m => {
-      const eid = 'edit_' + encodeURIComponent(m.team + '_' + m.name).replace(/%/g,'x');
-      html += `<div class="manage-member-row" style="margin-bottom:4px">
-        <div class="manage-member-name" style="min-width:80px">
-          ${m.name}
-          ${m.captain ? '<span class="tag tag-captain">队长</span>' : ''}
-        </div>
-        <div class="slot-tags" style="gap:4px">
-          <span class="tag tag-weapon">${m.weapon}</span>
-          <span class="tag tag-score">${m.score}</span>
-        </div>
-        <button class="btn-outline" style="margin-left:4px;font-size:11px;padding:2px 8px" onclick="toggleEdit('${eid}')">编辑</button>
-        <button class="btn-danger" style="font-size:11px;padding:2px 8px" onclick="adminRemove('${m.name}','${m.team}')">移除</button>
-      </div>
-      <div class="edit-fields" id="${eid}">
-        <div class="edit-row">
-          <div class="edit-select-wrap">
-            <select class="edit-select" id="eScore_${eid}">
-              ${['6W+','7W+','8W+','9W+','10W+','11W+','12W+','13W+','14W+','15W+','16W+','17W+','18W+','19W+','20W+'].map(s=>`<option ${s===m.score?'selected':''}>${s}</option>`).join('')}
-            </select>
-          </div>
-          <div class="edit-select-wrap">
-            <select class="edit-select" id="eWeapon_${eid}">
-              ${['棘梦','锤子','双刀','天命','一闪雷击弓','其他弓','匕首','冬至','长剑','长枪','罐子','千军','其他'].map(w=>`<option ${w===m.weapon?'selected':''}>${w}</option>`).join('')}
-            </select>
-          </div>
-        </div>
-        <div style="display:flex;gap:8px">
-          <button class="btn-save" onclick="saveEdit('${m.name}','${eid}','${m.team}')">保存</button>
-          <button class="btn-outline" onclick="toggleEdit('${eid}')">取消</button>
-        </div>
-      </div>
-    </div>`;
-  });
-  html += `</div>`;
+  for (var k = 0; k < keys.length; k++) {
+    var key = keys[k];
+    var members = teamMap[key];
+    html += '<div style="margin-bottom:16px">' +
+      '<div style="font-weight:600;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:6px">' +
+        getTeamIcon(key) + ' ' + getTeamName(key) +
+        '<span style="font-size:11px;color:var(--text2)">（' + members.length + '人）</span>' +
+      '</div>';
+    for (var m = 0; m < members.length; m++) {
+      var mem = members[m];
+      var eid = 'edit_' + k + '_' + m;
+      html += '<div class="manage-member-row" style="margin-bottom:4px">' +
+        '<div class="manage-member-name" style="min-width:80px">' +
+          mem.name + (mem.captain ? '<span class="tag tag-captain">队长</span>' : '') +
+        '</div>' +
+        '<div class="slot-tags" style="gap:4px">' +
+          '<span class="tag tag-weapon">' + mem.weapon + '</span>' +
+          '<span class="tag tag-score">' + mem.score + '</span>' +
+        '</div>' +
+        '<button class="btn-outline" style="margin-left:4px;font-size:11px;padding:2px 8px" onclick="toggleEdit(\'' + eid + '\')">编辑</button>' +
+        '<button class="btn-danger" style="font-size:11px;padding:2px 8px" onclick="adminRemove(\'' + mem.name + '\',\'' + mem.team + '\')">移除</button>' +
+      '</div>' +
+      '<div class="edit-fields" id="' + eid + '">' +
+        '<div class="edit-row">' +
+          '<div class="edit-select-wrap">' +
+            '<select class="edit-select" id="eScore_' + eid + '">' +
+              ['6W+','7W+','8W+','9W+','10W+','11W+','12W+','13W+','14W+','15W+','16W+','17W+','18W+','19W+','20W+'].map(function(s){ return '<option' + (s===mem.score?' selected':'') + '>' + s + '</option>'; }).join('') +
+            '</select>' +
+          '</div>' +
+          '<div class="edit-select-wrap">' +
+            '<select class="edit-select" id="eWeapon_' + eid + '">' +
+              ['棘梦','锤子','双刀','天命','一闪雷击弓','其他弓','匕首','冬至','长剑','长枪','罐子','千军','其他'].map(function(w){ return '<option' + (w===mem.weapon?' selected':'') + '>' + w + '</option>'; }).join('') +
+            '</select>' +
+          '</div>' +
+        '</div>' +
+        '<div style="display:flex;gap:8px">' +
+          '<button class="btn-save" onclick="saveAdminEdit(\'' + mem.name + '\',\'' + eid + '\')">保存</button>' +
+          '<button class="btn-outline" onclick="toggleEdit(\'' + eid + '\')">取消</button>' +
+        '</div>' +
+      '</div>';
+    }
+    html += '</div>';
+  }
+  html += '</div>';
   document.getElementById('manage-content').innerHTML = html;
 }
 
 async function adminRemove(name, team) {
-  if (!confirm(`确定要移除「${name}」（${getTeamName(team)}）吗？`)) return;
+  if (!confirm('确定要移除「' + name + '」（' + getTeamName(team) + '）吗？')) return;
   try {
-    const { members } = await githubGet();
-    const newMembers = members.filter(d => !(d.name === name && d.team === team));
+    var members = (_localData || []).slice();
+    var newMembers = [];
+    for (var i = 0; i < members.length; i++) {
+      if (!(members[i].name === name && members[i].team === team)) newMembers.push(members[i]);
+    }
     await githubPut(newMembers);
     _localData = newMembers;
     toast('已移除 ' + name, 'success');
@@ -940,87 +589,118 @@ function adminLogout() {
   toast('已退出管理员', 'success');
 }
 
+async function saveAdminEdit(name, eid) {
+  var newScore  = document.getElementById('eScore_' + eid).value;
+  var newWeapon = document.getElementById('eWeapon_' + eid).value;
+  try {
+    var members = (_localData || []).slice();
+    var idx = -1;
+    for (var i = 0; i < members.length; i++) {
+      if (members[i].name === name) { idx = i; break; }
+    }
+    if (idx >= 0) {
+      members[idx].score  = newScore;
+      members[idx].weapon = newWeapon;
+      await githubPut(members);
+      _localData = members;
+      toast('已更新 ' + name + ' 的信息', 'success');
+      renderAdminPanel();
+      renderSquads();
+    }
+  } catch(e) { toast('保存失败：' + e.message, 'error'); }
+}
+
+// ===== 队长面板 =====
 function renderManage() {
   if (!currentCaptain) return;
-  const data = _localData || [];
-  const teamMembers = data.filter(d => d.team === currentCaptain.team);
-  const teamName = getTeamName(currentCaptain.team);
-  const icon = getTeamIcon(currentCaptain.team);
-
-  let html = `<div class="manage-panel">
-    <div class="manage-title">${icon} ${teamName} · 队长管理面板</div>`;
-
-  teamMembers.forEach(m => {
-    const eid = 'edit_' + encodeURIComponent(m.name).replace(/%/g,'x');
-    html += `<div>
-      <div class="manage-member-row">
-        <div class="manage-member-name">
-          ${m.name}
-          ${m.captain ? '<span class="tag tag-captain" style="margin-left:4px">队长</span>' : ''}
-        </div>
-        <div class="slot-tags" style="gap:4px">
-          <span class="tag tag-weapon">${m.weapon}</span>
-          <span class="tag tag-score">${m.score}</span>
-        </div>
-        <button class="btn-outline" style="margin-left:8px" onclick="toggleEdit('${eid}')">编辑</button>
-        ${m.name !== currentCaptain.name ? `<button class="btn-danger" onclick="removeMember('${m.name}')">移除</button>` : ''}
-      </div>
-      <div class="edit-fields" id="${eid}">
-        <div class="edit-row">
-          <div class="edit-select-wrap">
-            <select class="edit-select" id="eScore_${eid}">
-              ${['6W+','7W+','8W+','9W+','10W+','11W+','12W+','13W+','14W+','15W+','16W+','17W+','18W+','19W+','20W+'].map(s=>`<option ${s===m.score?'selected':''}>${s}</option>`).join('')}
-            </select>
-          </div>
-          <div class="edit-select-wrap">
-            <select class="edit-select" id="eWeapon_${eid}">
-              ${['棘梦','锤子','双刀','天命','一闪雷击弓','其他弓','匕首','冬至','长剑','长枪','罐子','千军','其他'].map(w=>`<option ${w===m.weapon?'selected':''}>${w}</option>`).join('')}
-            </select>
-          </div>
-        </div>
-        <div style="display:flex;gap:8px">
-          <button class="btn-save" onclick="saveEdit('${m.name}','${eid}')">保存</button>
-          <button class="btn-outline" onclick="toggleEdit('${eid}')">取消</button>
-        </div>
-      </div>
-    </div>`;
-  });
-
-  for (let i = teamMembers.length; i < MAX_PER_TEAM; i++) {
-    html += `<div class="manage-member-row"><div class="slot-empty" style="flex:1">空位 ${i+1} - 等待报名</div></div>`;
+  var data = _localData || [];
+  var teamMembers = [];
+  for (var i = 0; i < data.length; i++) {
+    if (data[i].team === currentCaptain.team) teamMembers.push(data[i]);
   }
-  html += `</div>`;
+  var teamName = getTeamName(currentCaptain.team);
+  var icon = getTeamIcon(currentCaptain.team);
+
+  var html = '<div class="manage-panel">' +
+    '<div class="manage-title">' + icon + ' ' + teamName + ' · 队长管理面板</div>';
+
+  for (var m = 0; m < teamMembers.length; m++) {
+    var mem = teamMembers[m];
+    var eid = 'mng_' + m;
+    html += '<div>' +
+      '<div class="manage-member-row">' +
+        '<div class="manage-member-name">' +
+          mem.name + (mem.captain ? '<span class="tag tag-captain" style="margin-left:4px">队长</span>' : '') +
+        '</div>' +
+        '<div class="slot-tags" style="gap:4px">' +
+          '<span class="tag tag-weapon">' + mem.weapon + '</span>' +
+          '<span class="tag tag-score">' + mem.score + '</span>' +
+        '</div>' +
+        '<button class="btn-outline" style="margin-left:8px" onclick="toggleEdit(\'' + eid + '\')">编辑</button>' +
+        (mem.name !== currentCaptain.name ? '<button class="btn-danger" onclick="removeMember(\'' + mem.name + '\')">移除</button>' : '') +
+      '</div>' +
+      '<div class="edit-fields" id="' + eid + '">' +
+        '<div class="edit-row">' +
+          '<div class="edit-select-wrap">' +
+            '<select class="edit-select" id="eScore_' + eid + '">' +
+              ['6W+','7W+','8W+','9W+','10W+','11W+','12W+','13W+','14W+','15W+','16W+','17W+','18W+','19W+','20W+'].map(function(s){ return '<option' + (s===mem.score?' selected':'') + '>' + s + '</option>'; }).join('') +
+            '</select>' +
+          '</div>' +
+          '<div class="edit-select-wrap">' +
+            '<select class="edit-select" id="eWeapon_' + eid + '">' +
+              ['棘梦','锤子','双刀','天命','一闪雷击弓','其他弓','匕首','冬至','长剑','长枪','罐子','千军','其他'].map(function(w){ return '<option' + (w===mem.weapon?' selected':'') + '>' + w + '</option>'; }).join('') +
+            '</select>' +
+          '</div>' +
+        '</div>' +
+        '<div style="display:flex;gap:8px">' +
+          '<button class="btn-save" onclick="saveCaptainEdit(\'' + mem.name + '\',\'' + eid + '\')">保存</button>' +
+          '<button class="btn-outline" onclick="toggleEdit(\'' + eid + '\')">取消</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  for (var e = teamMembers.length; e < MAX_PER_TEAM; e++) {
+    html += '<div class="manage-member-row"><div class="slot-empty" style="flex:1">空位 ' + (e+1) + ' - 等待报名</div></div>';
+  }
+  html += '</div>';
   document.getElementById('manage-content').innerHTML = html;
 }
 
 function toggleEdit(id) {
-  document.getElementById(id).classList.toggle('show');
+  var el = document.getElementById(id);
+  if (el) el.classList.toggle('show');
 }
 
-async function saveEdit(name, eid, teamOverride) {
-  const newScore  = document.getElementById('eScore_' + eid).value;
-  const newWeapon = document.getElementById('eWeapon_' + eid).value;
+async function saveCaptainEdit(name, eid) {
+  var newScore  = document.getElementById('eScore_' + eid).value;
+  var newWeapon = document.getElementById('eWeapon_' + eid).value;
   try {
-    const { members } = await githubGet();
-    const idx = members.findIndex(d => d.name === name);
+    var members = (_localData || []).slice();
+    var idx = -1;
+    for (var i = 0; i < members.length; i++) {
+      if (members[i].name === name) { idx = i; break; }
+    }
     if (idx >= 0) {
       members[idx].score  = newScore;
       members[idx].weapon = newWeapon;
-      if (isAdminMode && teamOverride) members[idx].team = teamOverride;
       await githubPut(members);
       _localData = members;
       toast('已更新 ' + name + ' 的信息', 'success');
-      if (isAdminMode) { renderAdminPanel(); } else { renderManage(); }
+      renderManage();
       renderSquads();
     }
   } catch(e) { toast('保存失败：' + e.message, 'error'); }
 }
 
 async function removeMember(name) {
-  if (!confirm(`确定要移除「${name}」吗？`)) return;
+  if (!confirm('确定要移除「' + name + '」吗？')) return;
   try {
-    const { members } = await githubGet();
-    const newMembers = members.filter(d => !(d.name === name && d.team === currentCaptain.team));
+    var members = (_localData || []).slice();
+    var newMembers = [];
+    for (var i = 0; i < members.length; i++) {
+      if (!(members[i].name === name && members[i].team === currentCaptain.team)) newMembers.push(members[i]);
+    }
     await githubPut(newMembers);
     _localData = newMembers;
     toast('已移除 ' + name, 'success');
@@ -1028,6 +708,9 @@ async function removeMember(name) {
     renderSquads();
   } catch(e) { toast('移除失败：' + e.message, 'error'); }
 }
+
+// ===== 初始化 =====
+loadData(false);
 </script>
 </body>
 </html>

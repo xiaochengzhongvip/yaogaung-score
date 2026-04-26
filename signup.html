@@ -275,7 +275,8 @@ function toast(msg, type) {
   setTimeout(function() { el.className = 'toast'; }, 2500);
 }
 
-// ===== GitHub API =====
+// ===== GitHub API 辅助 =====
+
 async function getSHAFromGithub() {
   try {
     var r = await fetch(
@@ -283,57 +284,88 @@ async function getSHAFromGithub() {
     );
     var j = await r.json();
     return j.sha || null;
-  } catch(e) {
-    return null;
-  }
+  } catch(e) { return null; }
 }
 
-async function githubPut(members, retries) {
-  if (retries === undefined) retries = 5;
+// ===== GitHub 写入（自动处理 409 冲突）=====
+// action: 'add' | 'edit' | 'delete'
+// newEntry: 新增时传入对象，编辑/删除时传入 { name, team, ...变更字段 }
+// 返回 members 数组（最新状态）
+async function githubPut(action, newEntry, currentName, currentTeam) {
+  var attempt = 0;
+  var maxAttempts = 8;
 
-  // 获取最新 SHA
-  var freshSHA = await getSHAFromGithub();
-  if (freshSHA) _fileSHA = freshSHA;
+  while (attempt < maxAttempts) {
+    attempt++;
+    // ★ 每次尝试前都重新拉取最新数据
+    var latestData = await fetchLatestFromGithub();
+    var members = (latestData || []).slice();
 
-  var content = btoa(unescape(encodeURIComponent(JSON.stringify({ members: members, lastUpdated: new Date().toISOString() }, null, 2))));
-  var body = {
-    message: 'update signup data',
-    content: content,
-    committer: { name: 'Yunhai Bot', email: 'bot@yunhai.com' }
-  };
-  if (_fileSHA) body.sha = _fileSHA;
-
-  var r = await fetch(
-    'https://api.github.com/repos/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/contents/' + GITHUB_FILE,
-    {
-      method: 'PUT',
-      headers: {
-        'Authorization': 'token ' + GITHUB_TOKEN,
-        'Content-Type': 'application/json',
-        'Accept': 'application/vnd.github.v3+json'
-      },
-      body: JSON.stringify(body)
+    if (action === 'add') {
+      // 新增：先做业务校验
+      if (newEntry.name && members.find(function(d){ return d.name === newEntry.name; })) {
+        throw new Error('该角色名已报名\n如需修改请联系队长');
+      }
+      var tc = members.filter(function(d){ return d.team === newEntry.team; }).length;
+      if (tc >= MAX_PER_TEAM) {
+        throw new Error(getTeamName(newEntry.team) + ' 已满员（4人）\n请选择其他队伍');
+      }
+      members.push(newEntry);
+    } else if (action === 'edit') {
+      // 编辑：查找并更新
+      var idx = members.findIndex(function(d){ return d.name === currentName; });
+      if (idx < 0) throw new Error('未找到 ' + currentName);
+      for (var k in newEntry) { members[idx][k] = newEntry[k]; }
+    } else if (action === 'delete') {
+      // 删除：按 name + team 过滤
+      members = members.filter(function(d){ return !(d.name === currentName && d.team === currentTeam); });
     }
-  );
 
-  if (!r.ok) {
-    // 409 冲突：重新获取最新SHA后重试
-    if (r.status === 409 && retries > 0) {
-      console.log('检测到409冲突，第' + (6 - retries) + '次尝试...');
-      // 等待一小段时间让其他请求完成
-      await new Promise(function(resolve) { setTimeout(resolve, 500); });
-      return githubPut(members, retries - 1);
+    // 写入 GitHub
+    var sha = await getSHAFromGithub();
+    var encoded = btoa(unescape(encodeURIComponent(JSON.stringify({ members: members, lastUpdated: new Date().toISOString() }, null, 2))));
+    var body = JSON.stringify({
+      message: 'update signup data',
+      content: encoded,
+      sha: sha || undefined,
+      committer: { name: 'Yunhai Bot', email: 'bot@yunhai.com' }
+    });
+
+    var r = await fetch(
+      'https://api.github.com/repos/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/contents/' + GITHUB_FILE,
+      {
+        method: 'PUT',
+        headers: {
+          'Authorization': 'token ' + GITHUB_TOKEN,
+          'Content-Type': 'application/json',
+          'Accept': 'application/vnd.github.v3+json'
+        },
+        body: body
+      }
+    );
+
+    if (r.ok) {
+      var j = await r.json();
+      _fileSHA = j.content.sha;
+      EMBEDDED_SHA = j.content.sha;
+      saveLocal(members);
+      return members; // 返回最新数据
     }
+
+    if (r.status === 409) {
+      // 指数退避
+      var delay = Math.min(300 * Math.pow(1.5, attempt - 1), 3000);
+      console.log('409冲突，' + Math.round(delay) + 'ms 后重试（第' + attempt + '/' + maxAttempts + '次）');
+      await new Promise(function(resolve) { setTimeout(resolve, delay); });
+      continue;
+    }
+
     // 其他错误
     saveLocal(members);
     throw new Error('写入失败 ' + r.status + '，已保存到本地');
   }
-  
-  var j = await r.json();
-  _fileSHA = j.content.sha;
-  EMBEDDED_SHA = j.content.sha;
-  saveLocal(members);
-  return true;
+
+  throw new Error('重试' + maxAttempts + '次仍失败，请稍后再试');
 }
 
 function saveLocal(members) {
@@ -497,24 +529,9 @@ async function submitSignup() {
   btn.textContent = '提交中...';
 
   try {
-    // ★ 每次提交前先获取最新数据，避免覆盖别人的报名
-    var latestData = await fetchLatestFromGithub();
-    var members = (latestData || _localData || []).slice();
-
-    if (members.find(function(d){ return d.name === name; })) {
-      toast('该角色名已报名\n如需修改请联系队长', 'error');
-      btn.disabled = false; btn.textContent = '✦ 提交报名 ✦';
-      return;
-    }
-    var teamCount = members.filter(function(d){ return d.team === team; }).length;
-    if (teamCount >= MAX_PER_TEAM) {
-      toast(getTeamName(team) + ' 已满员（4人）\n请选择其他队伍', 'error');
-      btn.disabled = false; btn.textContent = '✦ 提交报名 ✦';
-      return;
-    }
-
-    members.push({ name: name, score: score, weapon: weapon, captain: isCap, team: team, time: Date.now() });
-    await githubPut(members);
+    // githubPut 内部会拉取最新数据、检查重复、处理 409 冲突
+    var newEntry = { name: name, score: score, weapon: weapon, captain: isCap, team: team, time: Date.now() };
+    var members = await githubPut('add', newEntry);
     _localData = members;
     EMBEDDED_DATA = members;
 
@@ -645,15 +662,9 @@ function renderAdminPanel() {
 async function adminRemove(name, team) {
   if (!confirm('确定要移除「' + name + '」（' + getTeamName(team) + '）吗？')) return;
   try {
-    var latest = await fetchLatestFromGithub();
-    var members = (latest || _localData || []).slice();
-    var newMembers = [];
-    for (var i = 0; i < members.length; i++) {
-      if (!(members[i].name === name && members[i].team === team)) newMembers.push(members[i]);
-    }
-    await githubPut(newMembers);
-    _localData = newMembers;
-    EMBEDDED_DATA = newMembers;
+    var members = await githubPut('delete', null, name, team);
+    _localData = members;
+    EMBEDDED_DATA = members;
     toast('已移除 ' + name, 'success');
     renderAdminPanel();
     renderSquads();
@@ -673,22 +684,12 @@ async function saveAdminEdit(name, eid) {
   var newScore  = document.getElementById('eScore_' + eid).value;
   var newWeapon = document.getElementById('eWeapon_' + eid).value;
   try {
-    var latest = await fetchLatestFromGithub();
-    var members = (latest || _localData || []).slice();
-    var idx = -1;
-    for (var i = 0; i < members.length; i++) {
-      if (members[i].name === name) { idx = i; break; }
-    }
-    if (idx >= 0) {
-      members[idx].score  = newScore;
-      members[idx].weapon = newWeapon;
-      await githubPut(members);
-      _localData = members;
-      EMBEDDED_DATA = members;
-      toast('已更新 ' + name + ' 的信息', 'success');
-      renderAdminPanel();
-      renderSquads();
-    }
+    var members = await githubPut('edit', { score: newScore, weapon: newWeapon }, name);
+    _localData = members;
+    EMBEDDED_DATA = members;
+    toast('已更新 ' + name + ' 的信息', 'success');
+    renderAdminPanel();
+    renderSquads();
   } catch(e) { toast('保存失败：' + e.message, 'error'); }
 }
 
@@ -758,37 +759,21 @@ async function saveCaptainEdit(name, eid) {
   var newScore  = document.getElementById('eScore_' + eid).value;
   var newWeapon = document.getElementById('eWeapon_' + eid).value;
   try {
-    var latest = await fetchLatestFromGithub();
-    var members = (latest || _localData || []).slice();
-    var idx = -1;
-    for (var i = 0; i < members.length; i++) {
-      if (members[i].name === name) { idx = i; break; }
-    }
-    if (idx >= 0) {
-      members[idx].score  = newScore;
-      members[idx].weapon = newWeapon;
-      await githubPut(members);
-      _localData = members;
-      EMBEDDED_DATA = members;
-      toast('已更新 ' + name + ' 的信息', 'success');
-      renderManage();
-      renderSquads();
-    }
+    var members = await githubPut('edit', { score: newScore, weapon: newWeapon }, name);
+    _localData = members;
+    EMBEDDED_DATA = members;
+    toast('已更新 ' + name + ' 的信息', 'success');
+    renderManage();
+    renderSquads();
   } catch(e) { toast('保存失败：' + e.message, 'error'); }
 }
 
 async function removeMember(name) {
   if (!confirm('确定要移除「' + name + '」吗？')) return;
   try {
-    var latest = await fetchLatestFromGithub();
-    var members = (latest || _localData || []).slice();
-    var newMembers = [];
-    for (var i = 0; i < members.length; i++) {
-      if (!(members[i].name === name && members[i].team === currentCaptain.team)) newMembers.push(members[i]);
-    }
-    await githubPut(newMembers);
-    _localData = newMembers;
-    EMBEDDED_DATA = newMembers;
+    var members = await githubPut('delete', null, name, currentCaptain.team);
+    _localData = members;
+    EMBEDDED_DATA = members;
     toast('已移除 ' + name, 'success');
     renderManage();
     renderSquads();

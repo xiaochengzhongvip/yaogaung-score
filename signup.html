@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>云海团战报名</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0a0e1a;
+  --bg2: #111827;
+  --card: #1a2235;
+  --card2: #1e2a40;
+  --gold: #d4a843;
+  --gold2: #f0c96a;
+  --text: #e2e8f0;
+  --text2: #94a3b8;
+  --border: rgba(212,168,67,0.2);
+  --radius: 12px;
+  --green: #22c55e;
+  --red: #ef4444;
+  --blue: #38bdf8;
+}
+html, body {
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+  font-size: 14px;
+}
+#app {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: var(--bg);
+  position: relative;
+}
+
+/* ===== 顶部 ===== */
+.header {
+  background: linear-gradient(180deg, #0d1526 0%, var(--bg) 100%);
+  padding: 24px 16px 16px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+.header::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+.header-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--gold2);
+  letter-spacing: 2px;
+  margin-bottom: 4px;
+}
+.header-sub {
+  font-size: 12px;
+  color: var(--text2);
+  letter-spacing: 1px;
+}
+.header-week {
+  display: inline-block;
+  margin-top: 8px;
+  background: rgba(212,168,67,0.12);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 3px 12px;
+  font-size: 12px;
+  color: var(--gold);
+}
+
+/* ===== Tab ===== */
+.tabs {
+  display: flex;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.tab-btn {
+  flex: 1;
+  padding: 12px 0;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text2);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+.tab-btn.active {
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+}
+
+/* ===== 页面内容 ===== */
+.page { display: none; padding: 16px; }
+.page.active { display: block; }
+
+/* ===== 表单 ===== */
+.form-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 20px;
+  border: 1px solid var(--border);
+  margin-bottom: 12px;
+}
+.form-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--gold);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.form-group {
+  margin-bottom: 14px;
+}
+.form-label {
+  font-size: 12px;
+  color: var(--text2);
+  margin-bottom: 6px;
+  display: block;
+}
+.form-label span {
+  color: var(--red);
+  margin-left: 2px;
+}
+.form-input, .form-select {
+  width: 100%;
+  background: var(--bg2);
+  border: 1px solid rgba(148,163,184,0.2);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--text);
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+  appearance: none;
+  -webkit-appearance: none;
+}
+.form-input:focus, .form-select:focus {
+  border-color: var(--gold);
+}
+.form-select-wrap {
+  position: relative;
+}
+.form-select-wrap::after {
+  content: '▾';
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text2);
+  pointer-events: none;
+  font-size: 12px;
+}
+
+/* 密码 */
+.captain-section {
+  background: rgba(212,168,67,0.06);
+  border: 1px dashed rgba(212,168,67,0.3);
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 14px;
+}
+.captain-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 13px;
+  color: var(--gold);
+}
+.captain-toggle input[type=checkbox] {
+  accent-color: var(--gold);
+  width: 16px;
+  height: 16px;
+}
+.captain-pwd-wrap { display: none; margin-top: 10px; }
+.captain-pwd-wrap.show { display: block; }
+
+/* 提交按钮 */
+.btn-submit {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #c8971e 0%, #e8b84b 100%);
+  color: #0a0e1a;
+  font-size: 15px;
+  font-weight: 800;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: opacity 0.2s;
+  margin-top: 4px;
+}
+.btn-submit:active { opacity: 0.8; }
+.btn-outline {
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text2);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+.btn-danger {
+  padding: 6px 12px;
+  background: rgba(239,68,68,0.1);
+  border: 1px solid rgba(239,68,68,0.3);
+  border-radius: 6px;
+  color: var(--red);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+/* ===== 队伍列表 ===== */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding: 0 2px;
+}
+.section-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+.section-tag {
+  font-size: 11px;
+  color: var(--text2);
+}
+
+.team-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  margin-bottom: 12px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.team-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(212,168,67,0.04);
+}
+.team-icon {
+  font-size: 20px;
+  width: 36px;
+  height: 36px;
+  background: rgba(212,168,67,0.1);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.team-name {
+  font-size: 15px;
+  font-weight: 700;
+}
+.team-count {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--text2);
+}
+.team-count.full {
+  color: var(--green);
+}
+.team-slots {
+  padding: 8px 14px;
+}
+.slot-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  position: relative;
+}
+.slot-row:last-child { border-bottom: none; }
+.slot-num {
+  width: 20px;
+  height: 20px;
+  background: var(--bg2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: var(--text2);
+  flex-shrink: 0;
+}
+.slot-empty {
+  flex: 1;
+  font-size: 13px;
+  color: rgba(148,163,184,0.4);
+  font-style: italic;
+}
+.slot-name {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+}
+.slot-tags {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.tag {
+  padding: 2px 7px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.tag-captain {
+  background: rgba(212,168,67,0.15);
+  color: var(--gold);
+  border: 1px solid rgba(212,168,67,0.3);
+}
+.tag-weapon {
+  background: rgba(56,189,248,0.1);
+  color: var(--blue);
+  border: 1px solid rgba(56,189,248,0.2);
+}
+.tag-score {
+  background: rgba(34,197,94,0.1);
+  color: var(--green);
+  border: 1px solid rgba(34,197,94,0.2);
+}
+
+/* ===== 队长管理面板 ===== */
+.manage-panel {
+  background: var(--card2);
+  border-radius: var(--radius);
+  padding: 16px;
+  border: 1px solid rgba(212,168,67,0.3);
+  margin-bottom: 16px;
+}
+.manage-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gold);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.manage-member-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.manage-member-row:last-child { border-bottom: none; }
+.manage-member-name { flex: 1; font-size: 13px; }
+.edit-fields { display: none; flex-direction: column; gap: 8px; padding: 10px 0; }
+.edit-fields.show { display: flex; }
+.edit-row { display: flex; gap: 8px; }
+.edit-input, .edit-select {
+  flex: 1;
+  background: var(--bg);
+  border: 1px solid rgba(148,163,184,0.2);
+  border-radius: 6px;
+  padding: 7px 10px;
+  color: var(--text);
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+}
+.edit-select-wrap { flex: 1; position: relative; }
+.edit-select-wrap::after {
+  content: '▾';
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text2);
+  pointer-events: none;
+  font-size: 11px;
+}
+.btn-save {
+  padding: 6px 14px;
+  background: rgba(34,197,94,0.1);
+  border: 1px solid rgba(34,197,94,0.3);
+  border-radius: 6px;
+  color: var(--green);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+/* ===== Toast ===== */
+.toast {
+  position: fixed;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-10px);
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 13px;
+  z-index: 9999;
+  opacity: 0;
+  transition: all 0.3s;
+  pointer-events: none;
+  max-width: 300px;
+  text-align: center;
+  white-space: pre-line;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+.toast.success { border-color: rgba(34,197,94,0.4); color: var(--green); }
+.toast.error { border-color: rgba(239,68,68,0.4); color: var(--red); }
+
+/* ===== 队长登录 ===== */
+.captain-login-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 20px;
+  border: 1px solid rgba(212,168,67,0.3);
+  margin-bottom: 16px;
+}
+.captain-login-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gold);
+  margin-bottom: 12px;
+}
+.captain-login-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* ===== 统计栏 ===== */
+.stats-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.stat-item {
+  flex: 1;
+  background: var(--card);
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+  border: 1px solid var(--border);
+}
+.stat-num {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--gold2);
+}
+.stat-label {
+  font-size: 11px;
+  color: var(--text2);
+  margin-top: 2px;
+}
+
+.spacer { height: 24px; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="header">
+    <div class="header-title">☁️ 云海团战报名</div>
+    <div class="header-sub">每周六团战 · 4人小队制</div>
+    <div class="header-week" id="week-label">加载中...</div>
+  </div>
+  <div class="tabs">
+    <div class="tab-btn active" data-tab="squads" onclick="switchTab('squads')">⚔️ 队伍总览</div>
+    <div class="tab-btn" data-tab="signup" onclick="switchTab('signup')">📋 报名参加</div>
+    <div class="tab-btn" data-tab="manage" onclick="switchTab('manage')">🛡️ 队长管理</div>
+  </div>
+
+  <!-- 队伍总览 -->
+  <div class="page active" id="page-squads">
+    <div class="stats-bar" id="stats-bar"></div>
+    <div id="squads-list"></div>
+    <div class="spacer"></div>
+  </div>
+
+  <!-- 报名 -->
+  <div class="page" id="page-signup">
+    <div class="form-card">
+      <div class="form-title">⚔️ 团战报名</div>
+      <div class="form-group">
+        <label class="form-label">角色名 <span>*</span></label>
+        <input class="form-input" id="inp-name" type="text" placeholder="请输入游戏角色名" maxlength="20">
+      </div>
+      <div class="form-group">
+        <label class="form-label">生存评分 <span>*</span></label>
+        <div class="form-select-wrap">
+          <select class="form-select" id="inp-score">
+            <option value="">请选择生存评分</option>
+            <option>6W+</option><option>7W+</option><option>8W+</option>
+            <option>9W+</option><option>10W+</option><option>11W+</option>
+            <option>12W+</option><option>13W+</option><option>14W+</option>
+            <option>15W+</option><option>16W+</option><option>17W+</option>
+            <option>18W+</option><option>19W+</option><option>20W+</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">使用武器 <span>*</span></label>
+        <div class="form-select-wrap">
+          <select class="form-select" id="inp-weapon">
+            <option value="">请选择武器</option>
+            <option>棘梦</option><option>锤子</option><option>双刀</option>
+            <option>天命</option><option>一闪雷击弓</option><option>其他弓</option>
+            <option>匕首</option><option>冬至</option><option>长剑</option>
+            <option>长枪</option><option>罐子</option><option>千军</option><option>其他</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="captain-section">
+        <label class="captain-toggle">
+          <input type="checkbox" id="chk-captain" onchange="toggleCaptainPwd()">
+          以队长身份报名（需要队长密码）
+        </label>
+        <div class="captain-pwd-wrap" id="captain-pwd-wrap">
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label" style="margin-top:8px">队长密码</label>
+            <input class="form-input" id="inp-captain-pwd" type="password" placeholder="请输入队长密码">
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class="btn-submit" onclick="submitSignup()">✦ 提交报名 ✦</button>
+    <div class="spacer"></div>
+  </div>
+
+  <!-- 队长管理 -->
+  <div class="page" id="page-manage">
+    <div class="captain-login-card">
+      <div class="captain-login-title">🔐 队长身份验证</div>
+      <div class="captain-login-row">
+        <input class="form-input" id="mgr-name" type="text" placeholder="你的角色名" style="flex:1">
+        <input class="form-input" id="mgr-pwd" type="password" placeholder="队长密码" style="flex:1">
+        <button class="btn-outline" onclick="captainLogin()">验证</button>
+      </div>
+    </div>
+    <div id="manage-content"></div>
+    <div class="spacer"></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ================== 配置 ==================
+const CAPTAIN_PASSWORD = 'yunhai2026'; // 队长密码
+const MAX_PER_TEAM = 4;
+const WEEK_LABEL = '第7周 · 2026-04-26';
+
+// ================== 数据 ==================
+// 用 localStorage 存储报名数据
+function getData() {
+  try {
+    return JSON.parse(localStorage.getItem('yunhai_signup') || '[]');
+  } catch { return []; }
+}
+function saveData(arr) {
+  localStorage.setItem('yunhai_signup', JSON.stringify(arr));
+}
+
+// ================== 初始化 ==================
+document.getElementById('week-label').textContent = WEEK_LABEL;
+
+// ================== Tab切换 ==================
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === 'page-' + tab));
+  if (tab === 'squads') renderSquads();
+  if (tab === 'manage') document.getElementById('manage-content').innerHTML = '';
+}
+
+// ================== Toast ==================
+function toast(msg, type = 'success') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show ' + type;
+  setTimeout(() => el.className = 'toast', 2200);
+}
+
+// ================== 队长密码toggle ==================
+function toggleCaptainPwd() {
+  const show = document.getElementById('chk-captain').checked;
+  document.getElementById('captain-pwd-wrap').classList.toggle('show', show);
+}
+
+// ================== 提交报名 ==================
+function submitSignup() {
+  const name = document.getElementById('inp-name').value.trim();
+  const score = document.getElementById('inp-score').value;
+  const weapon = document.getElementById('inp-weapon').value;
+  const isCaptain = document.getElementById('chk-captain').checked;
+  const pwd = document.getElementById('inp-captain-pwd').value;
+
+  if (!name) { toast('请填写角色名', 'error'); return; }
+  if (!score) { toast('请选择生存评分', 'error'); return; }
+  if (!weapon) { toast('请选择武器', 'error'); return; }
+  if (isCaptain && pwd !== CAPTAIN_PASSWORD) { toast('队长密码错误', 'error'); return; }
+
+  const data = getData();
+
+  // 检查是否已报名
+  if (data.find(d => d.name === name)) {
+    toast('该角色名已报名\n如需修改请联系队长', 'error');
+    return;
+  }
+
+  // 分配队伍（找第一个未满4人的队）
+  const teamCounts = {};
+  data.forEach(d => { teamCounts[d.team] = (teamCounts[d.team] || 0) + 1; });
+
+  let assignedTeam = null;
+  for (let i = 1; i <= 20; i++) {
+    const tname = '第' + '一二三四五六七八九十十一十二十三十四十五十六十七十八十九二十'.split('').slice(0, i).join('') + '队';
+    // 用数字队名
+    const key = 'T' + i;
+    if ((teamCounts[key] || 0) < MAX_PER_TEAM) {
+      assignedTeam = key;
+      break;
+    }
+  }
+
+  if (!assignedTeam) { toast('所有队伍已满员', 'error'); return; }
+
+  data.push({ name, score, weapon, captain: isCaptain, team: assignedTeam, time: Date.now() });
+  saveData(data);
+
+  // 清空表单
+  document.getElementById('inp-name').value = '';
+  document.getElementById('inp-score').value = '';
+  document.getElementById('inp-weapon').value = '';
+  document.getElementById('chk-captain').checked = false;
+  document.getElementById('captain-pwd-wrap').classList.remove('show');
+  document.getElementById('inp-captain-pwd').value = '';
+
+  const teamNum = assignedTeam.replace('T', '');
+  const teamName = getTeamName(assignedTeam);
+  toast('报名成功！\n已分配至 ' + teamName + (isCaptain ? '\n(队长身份)' : ''), 'success');
+  renderSquads();
+}
+
+// ================== 队名工具 ==================
+const CN = ['一','二','三','四','五','六','七','八','九','十','十一','十二','十三','十四','十五','十六','十七','十八','十九','二十'];
+const ICONS = ['🐰','🔥','⚡','🌟','💀','🌸','❄️','🎵','🔮','⚙️','🌊','🌙','🌈','⚔️','🦅','🐉','🌺','🎯','🏹','🔱'];
+function getTeamName(key) {
+  const n = parseInt(key.replace('T', ''));
+  return '第' + (CN[n-1] || n) + '队';
+}
+function getTeamIcon(key) {
+  const n = parseInt(key.replace('T', ''));
+  return ICONS[(n - 1) % ICONS.length];
+}
+
+// ================== 渲染队伍 ==================
+function renderSquads() {
+  const data = getData();
+  const teamMap = {};
+  data.forEach(d => {
+    if (!teamMap[d.team]) teamMap[d.team] = [];
+    teamMap[d.team].push(d);
+  });
+
+  const keys = Object.keys(teamMap).sort((a, b) => parseInt(a.replace('T','')) - parseInt(b.replace('T','')));
+
+  // 统计栏
+  const total = data.length;
+  const teamCount = keys.length;
+  const fullTeams = keys.filter(k => teamMap[k].length >= MAX_PER_TEAM).length;
+  document.getElementById('stats-bar').innerHTML = `
+    <div class="stat-item"><div class="stat-num">${total}</div><div class="stat-label">报名人数</div></div>
+    <div class="stat-item"><div class="stat-num">${teamCount}</div><div class="stat-label">队伍数量</div></div>
+    <div class="stat-item"><div class="stat-num">${fullTeams}</div><div class="stat-label">满员队伍</div></div>
+  `;
+
+  if (keys.length === 0) {
+    document.getElementById('squads-list').innerHTML = `
+      <div style="text-align:center;padding:40px 0;color:var(--text2)">
+        <div style="font-size:32px;margin-bottom:8px">📋</div>
+        <div>暂无报名数据</div>
+        <div style="font-size:12px;margin-top:4px">快去报名参加本周团战吧！</div>
+      </div>`;
+    return;
+  }
+
+  let html = '';
+  keys.forEach(key => {
+    const members = teamMap[key];
+    const count = members.length;
+    const icon = getTeamIcon(key);
+    const name = getTeamName(key);
+    html += `<div class="team-card">
+      <div class="team-card-header">
+        <div class="team-icon">${icon}</div>
+        <div class="team-name">${name}</div>
+        <div class="team-count ${count >= MAX_PER_TEAM ? 'full' : ''}">${count}/${MAX_PER_TEAM} ${count >= MAX_PER_TEAM ? '✓ 满员' : ''}</div>
+      </div>
+      <div class="team-slots">`;
+    
+    for (let i = 0; i < MAX_PER_TEAM; i++) {
+      const m = members[i];
+      html += `<div class="slot-row">
+        <div class="slot-num">${i+1}</div>`;
+      if (m) {
+        html += `<div class="slot-name">${m.name}</div>
+        <div class="slot-tags">
+          ${m.captain ? '<span class="tag tag-captain">队长</span>' : ''}
+          <span class="tag tag-weapon">${m.weapon}</span>
+          <span class="tag tag-score">${m.score}</span>
+        </div>`;
+      } else {
+        html += `<div class="slot-empty">等待报名...</div>`;
+      }
+      html += `</div>`;
+    }
+    html += `</div></div>`;
+  });
+
+  document.getElementById('squads-list').innerHTML = html;
+}
+
+// ================== 队长登录 ==================
+let currentCaptain = null;
+function captainLogin() {
+  const name = document.getElementById('mgr-name').value.trim();
+  const pwd = document.getElementById('mgr-pwd').value;
+  if (!name) { toast('请输入角色名', 'error'); return; }
+  if (pwd !== CAPTAIN_PASSWORD) { toast('队长密码错误', 'error'); return; }
+  const data = getData();
+  const self = data.find(d => d.name === name && d.captain);
+  if (!self) { toast('未找到该队长记录\n请先以队长身份报名', 'error'); return; }
+  currentCaptain = self;
+  toast('验证成功！', 'success');
+  renderManage();
+}
+
+// ================== 队长管理 ==================
+function renderManage() {
+  if (!currentCaptain) return;
+  const data = getData();
+  const teamMembers = data.filter(d => d.team === currentCaptain.team);
+  const teamName = getTeamName(currentCaptain.team);
+  const icon = getTeamIcon(currentCaptain.team);
+
+  let html = `<div class="manage-panel">
+    <div class="manage-title">${icon} ${teamName} · 队长管理面板</div>`;
+
+  teamMembers.forEach(m => {
+    html += `<div>
+      <div class="manage-member-row">
+        <div class="manage-member-name">
+          ${m.name}
+          ${m.captain ? '<span class="tag tag-captain" style="margin-left:4px">队长</span>' : ''}
+        </div>
+        <div class="slot-tags" style="gap:4px">
+          <span class="tag tag-weapon">${m.weapon}</span>
+          <span class="tag tag-score">${m.score}</span>
+        </div>
+        <button class="btn-outline" style="margin-left:8px" onclick="toggleEdit('edit-${m.name.replace(/[^a-zA-Z0-9]/g,'_')}')">编辑</button>
+        ${m.name !== currentCaptain.name ? `<button class="btn-danger" onclick="removeMember('${m.name}')">移除</button>` : ''}
+      </div>
+      <div class="edit-fields" id="edit-${m.name.replace(/[^a-zA-Z0-9]/g,'_')}">
+        <div class="edit-row">
+          <div class="edit-select-wrap">
+            <select class="edit-select" id="eScore-${m.name.replace(/[^a-zA-Z0-9]/g,'_')}">
+              ${['6W+','7W+','8W+','9W+','10W+','11W+','12W+','13W+','14W+','15W+','16W+','17W+','18W+','19W+','20W+'].map(s=>`<option ${s===m.score?'selected':''}>${s}</option>`).join('')}
+            </select>
+          </div>
+          <div class="edit-select-wrap">
+            <select class="edit-select" id="eWeapon-${m.name.replace(/[^a-zA-Z0-9]/g,'_')}">
+              ${['棘梦','锤子','双刀','天命','一闪雷击弓','其他弓','匕首','冬至','长剑','长枪','罐子','千军','其他'].map(w=>`<option ${w===m.weapon?'selected':''}>${w}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn-save" onclick="saveEdit('${m.name}')">保存</button>
+          <button class="btn-outline" onclick="toggleEdit('edit-${m.name.replace(/[^a-zA-Z0-9]/g,'_')}')">取消</button>
+        </div>
+      </div>
+    </div>`;
+  });
+
+  // 空位
+  for (let i = teamMembers.length; i < MAX_PER_TEAM; i++) {
+    html += `<div class="manage-member-row">
+      <div class="slot-empty" style="flex:1">空位 ${i+1} - 等待报名</div>
+    </div>`;
+  }
+
+  html += `</div>`;
+  document.getElementById('manage-content').innerHTML = html;
+}
+
+function toggleEdit(id) {
+  const el = document.getElementById(id);
+  el.classList.toggle('show');
+}
+
+function saveEdit(name) {
+  const key = name.replace(/[^a-zA-Z0-9]/g, '_');
+  const newScore = document.getElementById('eScore-' + key).value;
+  const newWeapon = document.getElementById('eWeapon-' + key).value;
+  const data = getData();
+  const idx = data.findIndex(d => d.name === name);
+  if (idx >= 0) {
+    data[idx].score = newScore;
+    data[idx].weapon = newWeapon;
+    saveData(data);
+    toast('已保存 ' + name + ' 的信息', 'success');
+    renderManage();
+    renderSquads();
+  }
+}
+
+function removeMember(name) {
+  if (!confirm(`确定要移除「${name}」吗？`)) return;
+  const data = getData().filter(d => !(d.name === name && d.team === currentCaptain.team));
+  saveData(data);
+  toast('已移除 ' + name, 'success');
+  renderManage();
+  renderSquads();
+}
+
+// ================== 初始渲染 ==================
+renderSquads();
+</script>
+</body>
+</html>

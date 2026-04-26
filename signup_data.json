@@ -1,13 +1,21 @@
 {
   "members": [
     {
-      "name": "1",
-      "score": "13W+",
-      "weapon": "长剑",
+      "name": "雪男",
+      "score": "8W+",
+      "weapon": "锤子",
       "captain": false,
-      "team": "T5",
-      "time": 1777193701432
+      "team": "T4",
+      "time": 1777193515083
+    },
+    {
+      "name": "七月失约",
+      "score": "20W+",
+      "weapon": "棘梦",
+      "captain": true,
+      "team": "T1",
+      "time": 1777193890181
     }
   ],
-  "lastUpdated": "2026-04-26T08:55:02.195Z"
+  "lastUpdated": "2026-04-26T08:58:10.838Z"
 }

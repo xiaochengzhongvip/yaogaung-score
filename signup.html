@@ -570,6 +570,7 @@ const WEEK_LABEL = getDateLabel();
 const GITHUB_OWNER = 'xiaochengzhongvip';
 const GITHUB_REPO  = 'yaogaung-score';
 const GITHUB_FILE  = 'signup_data.json';
+const EMBEDDED_DATA = [{"name":"KK","score":"15W+","weapon":"一闪雷击弓","captain":true,"team":"T1","time":1777181919922},{"name":"温婉","score":"14W+","weapon":"匕首","captain":false,"team":"T2","time":1777182941312}];
 const GITHUB_TOKEN = atob(atob('WjJod1gxY3pZVmhWWVhGbmMzSTVaRWxWTkhSQllteFdaVXRhT1ZocmNVeHVTakpXZEdsbFp3PT0='));
 
 // ============================================================
@@ -582,23 +583,19 @@ let _fileSHA   = null;
 // GitHub API
 // ============================================================
 async function githubGet() {
-  try {
-    // 用 fetch 跨域读取 raw 内容（public repo 允许 CORS）
-    const rawUrl = `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/${GITHUB_FILE}?t=${Date.now()}`;
-    const content = await fetch(rawUrl).then(r => r.json());
-    // 获取 SHA 用于写入（单独请求，失败则 sha=null）
-    let sha = null;
-    try {
-      const info = await fetch(
-        `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE}`
-      ).then(r => r.json());
-      sha = info.sha;
-    } catch(e) { /* 静默失败 */ }
-    return { members: content.members || [], sha };
-  } catch(e) {
-    console.error('读取失败', e);
-    return { members: [], sha: null };
-  }
+      // 优先使用嵌入数据（纯静态，无网络请求）
+      if (EMBEDDED_DATA && EMBEDDED_DATA.length > 0) {
+        return { members: EMBEDDED_DATA, sha: _fileSHA };
+      }
+      // fallback: 尝试从 GitHub 加载
+      try {
+        const rawUrl = `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/${GITHUB_FILE}?t=${Date.now()}`;
+        const content = await fetch(rawUrl).then(r => r.json());
+        return { members: content.members || [], sha: null };
+      } catch(e) {
+        return { members: [], sha: null };
+      }
+    }
 }
 
 async function githubPut(members) {

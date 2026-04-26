@@ -503,6 +503,8 @@ async function submitSignup() {
     document.getElementById('inp-captain-pwd').value = '';
 
     toast('报名成功！已加入 ' + getTeamName(team) + (isCap ? '\n(队长身份)' : ''), 'success');
+    EMBEDDED_DATA = members; // 更新本地数据
+    _localData = members;
     renderSquads();
   } catch(e) {
     toast('提交失败：' + e.message, 'error');

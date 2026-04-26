@@ -252,6 +252,7 @@ var GITHUB_TOKEN = atob(atob('WjJod1gxY3pZVmhWWVhGbmMzSTVaRWxWTkhSQllteFdaVXRhT1
 
 // ===== 嵌入数据（纯静态，无网络请求）====
 // 此数据在构建时嵌入，每次更新需重新生成此文件
+var EMBEDDED_SHA = '08447cee868f50607bf367a687ced56b2c1439ae';
 var EMBEDDED_DATA = [{"name":"KK","score":"15W+","weapon":"一闪雷击弓","captain":true,"team":"T1","time":1777181919922},{"name":"温婉","score":"14W+","weapon":"匕首","captain":false,"team":"T2","time":1777182941312}];
 
 // ===== 本地缓存 =====
@@ -282,7 +283,7 @@ async function githubPut(members) {
     content: content,
     committer: { name: 'Yunhai Bot', email: 'bot@yunhai.com' }
   };
-  if (_fileSHA) body.sha = _fileSHA;
+  body.sha = _fileSHA || EMBEDDED_SHA || null;
 
   var r = await fetch(
     'https://api.github.com/repos/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/contents/' + GITHUB_FILE,
@@ -312,7 +313,7 @@ async function loadData(showLoading) {
   }
 
   // 直接使用嵌入数据，秒开无等待
-  _localData = EMBEDDED_DATA || [];
+  _fileSHA = EMBEDDED_SHA; _localData = EMBEDDED_DATA || [];
 
   var now = new Date();
   document.getElementById('update-time').textContent =

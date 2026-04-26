@@ -393,9 +393,12 @@ async function loadData(showLoading) {
   renderSquads();
 
   try {
-    var r = await fetch(
-      'https://raw.githubusercontent.com/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/main/' + GITHUB_FILE + '?t=' + Date.now()
-    );
+    var r = await Promise.race([
+      fetch(
+        'https://raw.githubusercontent.com/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/main/' + GITHUB_FILE + '?t=' + Date.now()
+      ),
+      new Promise(function(_, reject) { setTimeout(function() { reject(new Error('timeout')); }, 5000); })
+    ]);
     if (r.ok) {
       var j = await r.json();
       if (j.members) {

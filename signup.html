@@ -617,6 +617,7 @@ async function adminRemove(name, team) {
     }
     await githubPut(newMembers);
     _localData = newMembers;
+    EMBEDDED_DATA = newMembers;
     toast('已移除 ' + name, 'success');
     renderAdminPanel();
     renderSquads();
@@ -646,6 +647,7 @@ async function saveAdminEdit(name, eid) {
       members[idx].weapon = newWeapon;
       await githubPut(members);
       _localData = members;
+      EMBEDDED_DATA = members;
       toast('已更新 ' + name + ' 的信息', 'success');
       renderAdminPanel();
       renderSquads();
@@ -729,6 +731,7 @@ async function saveCaptainEdit(name, eid) {
       members[idx].weapon = newWeapon;
       await githubPut(members);
       _localData = members;
+      EMBEDDED_DATA = members;
       toast('已更新 ' + name + ' 的信息', 'success');
       renderManage();
       renderSquads();
@@ -746,6 +749,7 @@ async function removeMember(name) {
     }
     await githubPut(newMembers);
     _localData = newMembers;
+    EMBEDDED_DATA = newMembers;
     toast('已移除 ' + name, 'success');
     renderManage();
     renderSquads();

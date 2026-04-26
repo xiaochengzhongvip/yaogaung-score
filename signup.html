@@ -513,7 +513,10 @@ async function submitSignup() {
   btn.textContent = '提交中...';
 
   try {
-    var members = (_localData || []).slice();
+    // ★ 每次提交前先获取最新数据，避免覆盖别人的报名
+    var latestData = await fetchLatestFromGithub();
+    var members = (latestData || _localData || []).slice();
+
     if (members.find(function(d){ return d.name === name; })) {
       toast('该角色名已报名\n如需修改请联系队长', 'error');
       btn.disabled = false; btn.textContent = '✦ 提交报名 ✦';
@@ -529,6 +532,7 @@ async function submitSignup() {
     members.push({ name: name, score: score, weapon: weapon, captain: isCap, team: team, time: Date.now() });
     await githubPut(members);
     _localData = members;
+    EMBEDDED_DATA = members;
 
     document.getElementById('inp-team').value = '';
     document.getElementById('inp-name').value = '';
@@ -539,8 +543,6 @@ async function submitSignup() {
     document.getElementById('inp-captain-pwd').value = '';
 
     toast('报名成功！已加入 ' + getTeamName(team) + (isCap ? '\n(队长身份)' : ''), 'success');
-    EMBEDDED_DATA = members; // 更新本地数据
-    _localData = members;
     renderSquads();
   } catch(e) {
     toast('提交失败：' + e.message, 'error');
@@ -548,6 +550,19 @@ async function submitSignup() {
     btn.disabled = false;
     btn.textContent = '✦ 提交报名 ✦';
   }
+}
+
+async function fetchLatestFromGithub() {
+  try {
+    var r = await fetch(
+      'https://raw.githubusercontent.com/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/main/' + GITHUB_FILE + '?t=' + Date.now()
+    );
+    if (r.ok) {
+      var j = await r.json();
+      if (j.members) return j.members;
+    }
+  } catch(e) {}
+  return null;
 }
 
 // ===== 队长/管理员登录 =====
@@ -646,7 +661,8 @@ function renderAdminPanel() {
 async function adminRemove(name, team) {
   if (!confirm('确定要移除「' + name + '」（' + getTeamName(team) + '）吗？')) return;
   try {
-    var members = (_localData || []).slice();
+    var latest = await fetchLatestFromGithub();
+    var members = (latest || _localData || []).slice();
     var newMembers = [];
     for (var i = 0; i < members.length; i++) {
       if (!(members[i].name === name && members[i].team === team)) newMembers.push(members[i]);
@@ -673,7 +689,8 @@ async function saveAdminEdit(name, eid) {
   var newScore  = document.getElementById('eScore_' + eid).value;
   var newWeapon = document.getElementById('eWeapon_' + eid).value;
   try {
-    var members = (_localData || []).slice();
+    var latest = await fetchLatestFromGithub();
+    var members = (latest || _localData || []).slice();
     var idx = -1;
     for (var i = 0; i < members.length; i++) {
       if (members[i].name === name) { idx = i; break; }
@@ -757,7 +774,8 @@ async function saveCaptainEdit(name, eid) {
   var newScore  = document.getElementById('eScore_' + eid).value;
   var newWeapon = document.getElementById('eWeapon_' + eid).value;
   try {
-    var members = (_localData || []).slice();
+    var latest = await fetchLatestFromGithub();
+    var members = (latest || _localData || []).slice();
     var idx = -1;
     for (var i = 0; i < members.length; i++) {
       if (members[i].name === name) { idx = i; break; }
@@ -778,7 +796,8 @@ async function saveCaptainEdit(name, eid) {
 async function removeMember(name) {
   if (!confirm('确定要移除「' + name + '」吗？')) return;
   try {
-    var members = (_localData || []).slice();
+    var latest = await fetchLatestFromGithub();
+    var members = (latest || _localData || []).slice();
     var newMembers = [];
     for (var i = 0; i < members.length; i++) {
       if (!(members[i].name === name && members[i].team === currentCaptain.team)) newMembers.push(members[i]);

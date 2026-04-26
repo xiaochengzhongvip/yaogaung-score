@@ -387,11 +387,6 @@ async function loadData(showLoading) {
     document.getElementById('squads-list').innerHTML = '<div class="loading-wrap"><div class="loading-spin"></div><div>正在同步最新数据...</div></div>';
   }
 
-  // 优先级：localStorage > GitHub > 嵌入数据
-  var localMembers = loadLocal();
-  _localData = (localMembers || []).slice();
-  renderSquads();
-
   try {
     var r = await Promise.race([
       fetch(
@@ -405,11 +400,15 @@ async function loadData(showLoading) {
         _localData = j.members;
         saveLocal(j.members); // 同步到 localStorage
         renderSquads();
+        return; // 完成
       }
     }
-  } catch(e) {
-    // GitHub 获取失败，用 localStorage 或嵌入数据
-  }
+  } catch(e) {}
+
+  // GitHub 失败：用 localStorage 或嵌入数据
+  var localMembers = loadLocal();
+  _localData = (localMembers || []).slice();
+  renderSquads();
 
   var now = new Date();
   document.getElementById('update-time').textContent =

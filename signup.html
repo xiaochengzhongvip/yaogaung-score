@@ -382,9 +382,17 @@ function loadLocal() {
 }
 
 // ===== 加载数据 =====
+// showLoading: 是否显示 loading 遮罩（切换 tab 时用 true，自动刷新用 false）
 async function loadData(showLoading) {
   if (showLoading) {
     document.getElementById('squads-list').innerHTML = '<div class="loading-wrap"><div class="loading-spin"></div><div>正在同步最新数据...</div></div>';
+  }
+
+  // 先用本地数据快速渲染，避免页面空白
+  var localMembers = loadLocal();
+  if (localMembers && localMembers.length > 0) {
+    _localData = localMembers.slice();
+    renderSquads();
   }
 
   try {
@@ -400,19 +408,19 @@ async function loadData(showLoading) {
         _localData = j.members;
         saveLocal(j.members); // 同步到 localStorage
         renderSquads();
-        return; // 完成
+        var now = new Date();
+        document.getElementById('update-time').textContent =
+          '最后同步：' + now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0');
+        return;
       }
     }
   } catch(e) {}
 
-  // GitHub 失败：用 localStorage 或嵌入数据
-  var localMembers = loadLocal();
-  _localData = (localMembers || []).slice();
-  renderSquads();
-
-  var now = new Date();
-  document.getElementById('update-time').textContent =
-    '最后同步：' + now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0');
+  // GitHub 失败或无数据：用嵌入数据
+  if (!_localData || _localData.length === 0) {
+    _localData = (EMBEDDED_DATA || []).slice();
+    renderSquads();
+  }
 }
 
 // ===== 队伍总览渲染 =====

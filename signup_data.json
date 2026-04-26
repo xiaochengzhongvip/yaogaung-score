@@ -31,7 +31,15 @@
       "captain": true,
       "team": "T6",
       "time": 1777194797310
+    },
+    {
+      "name": "玉帝",
+      "score": "17W+",
+      "weapon": "双刀",
+      "captain": false,
+      "team": "T6",
+      "time": 1777195157939
     }
   ],
-  "lastUpdated": "2026-04-26T09:13:18.252Z"
+  "lastUpdated": "2026-04-26T09:19:18.751Z"
 }

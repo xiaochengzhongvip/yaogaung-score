@@ -466,6 +466,19 @@ html, body {
     <div class="form-card">
       <div class="form-title">⚔️ 团战报名</div>
       <div class="form-group">
+        <label class="form-label">选择队伍 <span>*</span></label>
+        <div class="form-select-wrap">
+          <select class="form-select" id="inp-team">
+            <option value="">请选择队伍</option>
+            <option value="T1">第一队</option><option value="T2">第二队</option><option value="T3">第三队</option>
+            <option value="T4">第四队</option><option value="T5">第五队</option><option value="T6">第六队</option>
+            <option value="T7">第七队</option><option value="T8">第八队</option><option value="T9">第九队</option>
+            <option value="T10">第十队</option><option value="T11">第十一队</option><option value="T12">第十二队</option>
+            <option value="T13">第十三队</option><option value="T14">第十四队</option><option value="T15">第十五队</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
         <label class="form-label">角色名 <span>*</span></label>
         <input class="form-input" id="inp-name" type="text" placeholder="请输入游戏角色名" maxlength="20">
       </div>
@@ -730,12 +743,14 @@ function toggleCaptainPwd() {
 // 提交报名
 // ============================================================
 async function submitSignup() {
-  const name    = document.getElementById('inp-name').value.trim();
-  const score   = document.getElementById('inp-score').value;
-  const weapon  = document.getElementById('inp-weapon').value;
-  const isCap   = document.getElementById('chk-captain').checked;
-  const pwd     = document.getElementById('inp-captain-pwd').value;
+  const team   = document.getElementById('inp-team').value;
+  const name   = document.getElementById('inp-name').value.trim();
+  const score  = document.getElementById('inp-score').value;
+  const weapon = document.getElementById('inp-weapon').value;
+  const isCap  = document.getElementById('chk-captain').checked;
+  const pwd    = document.getElementById('inp-captain-pwd').value;
 
+  if (!team)   { toast('请选择队伍', 'error'); return; }
   if (!name)   { toast('请填写角色名', 'error'); return; }
   if (!score)  { toast('请选择生存评分', 'error'); return; }
   if (!weapon) { toast('请选择武器', 'error'); return; }
@@ -755,21 +770,19 @@ async function submitSignup() {
       return;
     }
 
-    // 分配队伍
-    const teamCounts = {};
-    members.forEach(d => { teamCounts[d.team] = (teamCounts[d.team] || 0) + 1; });
-    let assigned = null;
-    for (let i = 1; i <= 20; i++) {
-      const key = 'T' + i;
-      if ((teamCounts[key] || 0) < MAX_PER_TEAM) { assigned = key; break; }
+    // 检查队伍是否已满
+    const teamCount = members.filter(d => d.team === team).length;
+    if (teamCount >= MAX_PER_TEAM) {
+      toast(getTeamName(team) + ' 已满员（4人）\n请选择其他队伍', 'error');
+      return;
     }
-    if (!assigned) { toast('所有队伍已满员', 'error'); return; }
 
-    members.push({ name, score, weapon, captain: isCap, team: assigned, time: Date.now() });
+    members.push({ name, score, weapon, captain: isCap, team: team, time: Date.now() });
     await githubPut(members);
     _localData = members;
 
     // 清空表单
+    document.getElementById('inp-team').value = '';
     document.getElementById('inp-name').value = '';
     document.getElementById('inp-score').value = '';
     document.getElementById('inp-weapon').value = '';
@@ -777,8 +790,8 @@ async function submitSignup() {
     document.getElementById('captain-pwd-wrap').classList.remove('show');
     document.getElementById('inp-captain-pwd').value = '';
 
-    const teamName = getTeamName(assigned);
-    toast('报名成功！\n已分配至 ' + teamName + (isCap ? '\n(队长身份)' : ''), 'success');
+    const teamName = getTeamName(team);
+    toast('报名成功！\n已加入 ' + teamName + (isCap ? '\n(队长身份)' : ''), 'success');
     renderSquads();
   } catch(e) {
     toast('提交失败：' + e.message, 'error');

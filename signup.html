@@ -583,19 +583,28 @@ let _fileSHA   = null;
 // ============================================================
 async function githubGet() {
   try {
-    // public repo 不需要 token 获取 SHA（无 CORS 问题）
+    // 获取 SHA（需要 CORS）
     const info = await fetch(
-      `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE}`
+      `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE}`,
+      { mode: 'cors' }
     ).then(r => r.json());
     _fileSHA = info.sha;
 
-    // 直接用 raw URL 获取内容（无 CORS）
+    // 获取内容（raw URL 也需要 CORS）
     const rawUrl = info.download_url;
-    const content = await fetch(rawUrl).then(r => r.json());
+    const content = await fetch(rawUrl, { mode: 'cors' }).then(r => r.json());
     return { members: content.members || [], sha: info.sha };
   } catch(e) {
     console.error('读取失败', e);
-    return { members: [], sha: null };
+    // 如果 GitHub CORS 完全失败，尝试用 no-cors 作为 fallback（只能读 raw）
+    try {
+      const rawUrl = `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/${GITHUB_FILE}`;
+      const content = await fetch(rawUrl, { mode: 'cors' }).then(r => r.json());
+      return { members: content.members || [], sha: null };
+    } catch(e2) {
+      console.error('Fallback 也失败', e2);
+      return { members: [], sha: null };
+    }
   }
 }
 

@@ -1,13 +1,29 @@
 {
   "members": [
     {
+      "name": "KK",
+      "score": "15W+",
+      "weapon": "一闪雷击弓",
+      "captain": true,
+      "team": "T1",
+      "time": 1777181919922
+    },
+    {
       "name": "温婉",
       "score": "14W+",
       "weapon": "匕首",
       "captain": false,
       "team": "T2",
       "time": 1777182941312
+    },
+    {
+      "name": "Yolo蛋蛋",
+      "score": "8W+",
+      "weapon": "锤子",
+      "captain": false,
+      "team": "T8",
+      "time": 1777193193113
     }
   ],
-  "lastUpdated": "2026-04-26T08:45:10.839Z"
+  "lastUpdated": "2026-04-26T08:46:33.988Z"
 }

@@ -544,7 +544,10 @@ async function submitSignup() {
     document.getElementById('inp-captain-pwd').value = '';
 
     toast('报名成功！已加入 ' + getTeamName(team) + (isCap ? '\n(队长身份)' : ''), 'success');
-    renderSquads();
+
+    // 提交成功后切换到队伍总览并刷新最新数据
+    switchTab('squads');
+    loadData(true);
   } catch(e) {
     toast('提交失败：' + e.message, 'error');
   } finally {
@@ -667,8 +670,7 @@ async function adminRemove(name, team) {
     EMBEDDED_DATA = members;
     toast('已移除 ' + name, 'success');
     renderAdminPanel();
-    renderSquads();
-  } catch(e) { toast('移除失败：' + e.message, 'error'); }
+    loadData(true);
 }
 
 function adminLogout() {
@@ -689,7 +691,7 @@ async function saveAdminEdit(name, eid) {
     EMBEDDED_DATA = members;
     toast('已更新 ' + name + ' 的信息', 'success');
     renderAdminPanel();
-    renderSquads();
+    loadData(true);
   } catch(e) { toast('保存失败：' + e.message, 'error'); }
 }
 
@@ -764,7 +766,7 @@ async function saveCaptainEdit(name, eid) {
     EMBEDDED_DATA = members;
     toast('已更新 ' + name + ' 的信息', 'success');
     renderManage();
-    renderSquads();
+    loadData(true);
   } catch(e) { toast('保存失败：' + e.message, 'error'); }
 }
 
@@ -776,7 +778,7 @@ async function removeMember(name) {
     EMBEDDED_DATA = members;
     toast('已移除 ' + name, 'success');
     renderManage();
-    renderSquads();
+    loadData(true);
   } catch(e) { toast('移除失败：' + e.message, 'error'); }
 }
 

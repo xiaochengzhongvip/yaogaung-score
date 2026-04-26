@@ -583,28 +583,21 @@ let _fileSHA   = null;
 // ============================================================
 async function githubGet() {
   try {
-    // 获取 SHA（需要 CORS）
-    const info = await fetch(
-      `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE}`,
-      { mode: 'cors' }
-    ).then(r => r.json());
-    _fileSHA = info.sha;
-
-    // 获取内容（raw URL 也需要 CORS）
-    const rawUrl = info.download_url;
-    const content = await fetch(rawUrl, { mode: 'cors' }).then(r => r.json());
-    return { members: content.members || [], sha: info.sha };
+    // 用 fetch 跨域读取 raw 内容（public repo 允许 CORS）
+    const rawUrl = `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/${GITHUB_FILE}?t=${Date.now()}`;
+    const content = await fetch(rawUrl).then(r => r.json());
+    // 获取 SHA 用于写入（单独请求，失败则 sha=null）
+    let sha = null;
+    try {
+      const info = await fetch(
+        `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE}`
+      ).then(r => r.json());
+      sha = info.sha;
+    } catch(e) { /* 静默失败 */ }
+    return { members: content.members || [], sha };
   } catch(e) {
     console.error('读取失败', e);
-    // 如果 GitHub CORS 完全失败，尝试用 no-cors 作为 fallback（只能读 raw）
-    try {
-      const rawUrl = `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/${GITHUB_FILE}`;
-      const content = await fetch(rawUrl, { mode: 'cors' }).then(r => r.json());
-      return { members: content.members || [], sha: null };
-    } catch(e2) {
-      console.error('Fallback 也失败', e2);
-      return { members: [], sha: null };
-    }
+    return { members: [], sha: null };
   }
 }
 

@@ -533,11 +533,14 @@ html, body {
   <!-- 队长管理 -->
   <div class="page" id="page-manage">
     <div class="captain-login-card">
-      <div class="captain-login-title">🔐 队长身份验证</div>
+      <div class="captain-login-title">🔐 身份验证</div>
       <div class="captain-login-row">
-        <input class="form-input" id="mgr-name" type="text" placeholder="你的角色名" style="flex:1">
-        <input class="form-input" id="mgr-pwd" type="password" placeholder="队长密码" style="flex:1">
+        <input class="form-input" id="mgr-name" type="text" placeholder="你的角色名（或管理员）" style="flex:1">
+        <input class="form-input" id="mgr-pwd" type="password" placeholder="密码" style="flex:1">
         <button class="btn-outline" onclick="captainLogin()">验证</button>
+      </div>
+      <div style="font-size:11px;color:var(--text2);margin-top:6px;text-align:center">
+        队长：输入角色名 + 队长密码 · 管理员：输入「管理员」+ 管理密码
       </div>
     </div>
     <div id="manage-content"></div>
@@ -551,6 +554,7 @@ html, body {
 // 配置
 // ============================================================
 const CAPTAIN_PASSWORD = 'yunhai2026';
+const ADMIN_PASSWORD   = 'admin2026';
 const MAX_PER_TEAM = 4;
 const WEEK_LABEL = '第8周 · 2026-04-26';
 
@@ -650,7 +654,7 @@ function switchTab(tab) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
   document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === 'page-' + tab));
   if (tab === 'squads') loadData();
-  if (tab === 'manage') { document.getElementById('manage-content').innerHTML = ''; currentCaptain = null; }
+  if (tab === 'manage') { document.getElementById('manage-content').innerHTML = ''; currentCaptain = null; isAdminMode = false; }
 }
 
 // ============================================================
@@ -808,23 +812,123 @@ async function submitSignup() {
 }
 
 // ============================================================
-// 队长管理
+// 队长/管理员管理
 // ============================================================
-let currentCaptain = null;
+let currentCaptain = null;  // 队长模式
+let isAdminMode    = false; // 管理员模式
 
 async function captainLogin() {
   const name = document.getElementById('mgr-name').value.trim();
   const pwd  = document.getElementById('mgr-pwd').value;
+
+  // 管理员登录
+  if (name === '管理员' && pwd === ADMIN_PASSWORD) {
+    isAdminMode = true;
+    currentCaptain = null;
+    const { members } = await githubGet();
+    _localData = members;
+    toast('管理员登录成功！', 'success');
+    renderAdminPanel();
+    return;
+  }
+
+  // 队长登录
   if (!name) { toast('请输入角色名', 'error'); return; }
-  if (pwd !== CAPTAIN_PASSWORD) { toast('队长密码错误', 'error'); return; }
+  if (pwd !== CAPTAIN_PASSWORD) { toast('密码错误', 'error'); return; }
 
   const { members } = await githubGet();
   _localData = members;
   const self = members.find(d => d.name === name && d.captain);
   if (!self) { toast('未找到该队长记录\n请先以队长身份报名', 'error'); return; }
+  isAdminMode = false;
   currentCaptain = self;
   toast('验证成功！', 'success');
   renderManage();
+}
+
+// 管理员面板 — 可修改/删除所有队伍的所有成员
+async function renderAdminPanel() {
+  const data = _localData || [];
+  const teamMap = {};
+  data.forEach(d => {
+    if (!teamMap[d.team]) teamMap[d.team] = [];
+    teamMap[d.team].push(d);
+  });
+  const keys = Object.keys(teamMap).sort((a,b) => parseInt(a.replace('T','')) - parseInt(b.replace('T','')));
+
+  let html = `<div class="manage-panel">
+    <div class="manage-title" style="color:var(--red)">🛡️ 管理员面板 · 全员管理</div>
+    <div style="margin-bottom:12px">
+      <button class="btn-outline" onclick="adminLogout()" style="font-size:12px">退出管理员</button>
+    </div>`;
+
+  keys.forEach(key => {
+    const members = teamMap[key];
+    const icon = getTeamIcon(key);
+    const name = getTeamName(key);
+    html += `<div style="margin-bottom:16px">
+      <div style="font-weight:600;color:var(--text1);margin-bottom:6px;display:flex;align-items:center;gap:6px">
+        ${icon} ${name}
+        <span style="font-size:11px;color:var(--text2)">（${members.length}人）</span>
+      </div>`;
+    members.forEach(m => {
+      const eid = 'edit_' + encodeURIComponent(m.team + '_' + m.name).replace(/%/g,'x');
+      html += `<div class="manage-member-row" style="margin-bottom:4px">
+        <div class="manage-member-name" style="min-width:80px">
+          ${m.name}
+          ${m.captain ? '<span class="tag tag-captain">队长</span>' : ''}
+        </div>
+        <div class="slot-tags" style="gap:4px">
+          <span class="tag tag-weapon">${m.weapon}</span>
+          <span class="tag tag-score">${m.score}</span>
+        </div>
+        <button class="btn-outline" style="margin-left:4px;font-size:11px;padding:2px 8px" onclick="toggleEdit('${eid}')">编辑</button>
+        <button class="btn-danger" style="font-size:11px;padding:2px 8px" onclick="adminRemove('${m.name}','${m.team}')">移除</button>
+      </div>
+      <div class="edit-fields" id="${eid}">
+        <div class="edit-row">
+          <div class="edit-select-wrap">
+            <select class="edit-select" id="eScore_${eid}">
+              ${['6W+','7W+','8W+','9W+','10W+','11W+','12W+','13W+','14W+','15W+','16W+','17W+','18W+','19W+','20W+'].map(s=>`<option ${s===m.score?'selected':''}>${s}</option>`).join('')}
+            </select>
+          </div>
+          <div class="edit-select-wrap">
+            <select class="edit-select" id="eWeapon_${eid}">
+              ${['棘梦','锤子','双刀','天命','一闪雷击弓','其他弓','匕首','冬至','长剑','长枪','罐子','千军','其他'].map(w=>`<option ${w===m.weapon?'selected':''}>${w}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn-save" onclick="saveEdit('${m.name}','${eid}','${m.team}')">保存</button>
+          <button class="btn-outline" onclick="toggleEdit('${eid}')">取消</button>
+        </div>
+      </div>
+    </div>`;
+  });
+  html += `</div>`;
+  document.getElementById('manage-content').innerHTML = html;
+}
+
+async function adminRemove(name, team) {
+  if (!confirm(`确定要移除「${name}」（${getTeamName(team)}）吗？`)) return;
+  try {
+    const { members } = await githubGet();
+    const newMembers = members.filter(d => !(d.name === name && d.team === team));
+    await githubPut(newMembers);
+    _localData = newMembers;
+    toast('已移除 ' + name, 'success');
+    renderAdminPanel();
+    renderSquads();
+  } catch(e) { toast('移除失败：' + e.message, 'error'); }
+}
+
+function adminLogout() {
+  isAdminMode = false;
+  currentCaptain = null;
+  document.getElementById('manage-content').innerHTML = '';
+  document.getElementById('mgr-name').value = '';
+  document.getElementById('mgr-pwd').value = '';
+  toast('已退出管理员', 'success');
 }
 
 function renderManage() {
@@ -884,7 +988,7 @@ function toggleEdit(id) {
   document.getElementById(id).classList.toggle('show');
 }
 
-async function saveEdit(name, eid) {
+async function saveEdit(name, eid, teamOverride) {
   const newScore  = document.getElementById('eScore_' + eid).value;
   const newWeapon = document.getElementById('eWeapon_' + eid).value;
   try {
@@ -893,10 +997,11 @@ async function saveEdit(name, eid) {
     if (idx >= 0) {
       members[idx].score  = newScore;
       members[idx].weapon = newWeapon;
+      if (isAdminMode && teamOverride) members[idx].team = teamOverride;
       await githubPut(members);
       _localData = members;
       toast('已更新 ' + name + ' 的信息', 'success');
-      renderManage();
+      if (isAdminMode) { renderAdminPanel(); } else { renderManage(); }
       renderSquads();
     }
   } catch(e) { toast('保存失败：' + e.message, 'error'); }

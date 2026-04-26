@@ -1,29 +1,13 @@
 {
   "members": [
     {
-      "name": "KK",
-      "score": "15W+",
-      "weapon": "一闪雷击弓",
-      "captain": true,
-      "team": "T1",
-      "time": 1777181919922
-    },
-    {
       "name": "温婉",
       "score": "14W+",
       "weapon": "匕首",
       "captain": false,
       "team": "T2",
       "time": 1777182941312
-    },
-    {
-      "name": "七月失约",
-      "score": "20W+",
-      "weapon": "棘梦",
-      "captain": true,
-      "team": "T3",
-      "time": 1777193385072
     }
   ],
-  "lastUpdated": "2026-04-26T08:49:46.901Z"
+  "lastUpdated": "2026-04-26T08:47:24.394Z"
 }

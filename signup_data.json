@@ -1,13 +1,13 @@
 {
   "members": [
     {
-      "name": "KK",
-      "score": "9W+",
-      "weapon": "天命",
-      "captain": true,
-      "team": "T6",
-      "time": 1777193412839
+      "name": "招魂引",
+      "score": "19W+",
+      "weapon": "匕首",
+      "captain": false,
+      "team": "T1",
+      "time": 1777193492811
     }
   ],
-  "lastUpdated": "2026-04-26T08:50:13.511Z"
+  "lastUpdated": "2026-04-26T08:51:33.546Z"
 }
